@@ -1,0 +1,47 @@
+# Changelog
+
+Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
+
+O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
+e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
+
+> **Versão atual:** `0.1.0` — última release em `2026-07-03`.
+> **Próxima versão prevista:** acumulando em `[Unreleased]`.
+
+## [Unreleased]
+
+### Changed
+- Hero da home virou apresentação de dev: headline "Engenheiro de Software Fullstack", descrição profissional, chips de skills, retrato em quadro HUD (zoom suave no hover) e ícones sociais — todo o conteúdo (eyebrow, título, descrição, foto, tags, redes) editável em `public/profile.json` via loader `src/data/profile.ts` — `src/components/home/hero.tsx`.
+- Footer troca "Built with Next.js / Three.js" por ícones sociais pequenos (SVG inline, sem dependência) com URLs do `profile.json`; componente `SocialLinks` compartilhado entre footer (sm) e hero (md) — `src/components/layout/social-links.tsx`, `site-footer.tsx`.
+- Fonte de dados dos projetos migrada do registry TypeScript para `public/projects/projects.json` — adicionar/remover projeto é editar só o JSON (+ assets); em dev o arquivo é relido a cada request, em produção exige rebuild (páginas são SSG) — `src/data/projects.ts` virou loader com validação.
+- Carousel da home sem duplicação de slides: loop e auto-scroll agora só ativam quando a soma dos cards ultrapassa a viewport (medida via ResizeObserver); com poucos cards (ou 1) o track fica parado e centralizado, sem fades de borda — `src/components/home/project-carousel.tsx`.
+
+### Fixed
+- Flash do frame do smartphone sumindo por alguns ms até o modelo 3D aparecer: o frame estático agora fica montado sob o canvas transparente e só faz fade-out quando a cena reporta o primeiro frame texturizado (`onReady` no carregamento da textura) — crossfade contínuo verificado por medição — `src/components/project/device-canvas.tsx`, `device-scene.tsx`.
+- Capa "crua" durante a transição shared-element e conteúdo do hero "pipocando" depois: o scrim agora vive dentro do elemento compartilhado (card e hero) para o morph carregar a máscara junto; o texto do hero é revelado em stagger após o morph, com loader HUD animado enquanto a capa carrega — `src/components/project/project-hero.tsx`, `src/components/home/project-carousel.tsx`, `src/app/globals.css`.
+- Fase "The app" reaparecendo no fim do showcase: motion compila `useTransform(scrollYProgress)` em keyframes WAAPI/ScrollTimeline, e range terminando antes de 1 ganha keyframe final implícito com o valor base (`opacity: 1`) — todos os ranges agora cobrem o domínio 0–1 com endpoints explícitos — `src/components/project/device-showcase.tsx`.
+- Sobreposição de textos das fases ("The app" aparecendo sob "Platform") no showcase 3D durante o scroll — janelas de opacidade das camadas empilhadas agora são sequenciais, sem overlap — `src/components/project/device-showcase.tsx`.
+- Warning de console `THREE.Clock: This module has been deprecated` — `three` fixado em `0.182.0` (última versão sem a deprecation; `@react-three/fiber` 9.x instancia `Clock` internamente e o fix upstream só existe no v10 canary).
+
+### Added
+-
+
+### Changed
+-
+
+## [0.1.0] - 2026-07-03
+
+### Added
+- Otimização de performance: cena 3D montada apenas quando a seção entra no viewport (Lighthouse projeto 72 → 100, TBT 920ms → 0ms) — `src/components/project/device-showcase.tsx`.
+- Auditoria de acessibilidade e reduced-motion: contraste AA nos chips de stack, `h1` na página 404, aviso `sr-only` em links externos, scroll-cue com `motion-safe:` — Lighthouse a11y 100.
+- Showcase 3D scroll-driven na página de projeto: smartphone procedural (Android/iOS por projeto) em `@react-three/fiber` com `frameloop="demand"`, screenshot do app como textura da tela, fases de conteúdo em cross-fade e trilho de progresso HUD — `src/components/project/device-showcase.tsx`, `device-scene.tsx`, `device-canvas.tsx`, `static-device-fallback.tsx` (fallback estático para WebGL indisponível e reduced-motion).
+- Template de página de projeto dirigido por dados em `/projects/[slug]`: hero com shared element, seções About/Features/Architecture/Extras/Links com omissão graciosa de campos opcionais, `generateStaticParams` + 404 para slug desconhecido — `src/app/projects/[slug]/page.tsx`, `src/components/project/sections.tsx`, `project-hero.tsx`, `src/app/not-found.tsx`.
+- Carousel infinito na home com Embla (`loop` + `dragFree` + auto-scroll com pausa no hover, desabilitado sob reduced-motion) e transição shared-element via View Transitions API (React `ViewTransition` + `experimental.viewTransition`) do card para o hero do projeto — `src/components/home/project-carousel.tsx`.
+- Hero da home com reveal de texto mascarado palavra a palavra e estética HUD-futurista — `src/components/home/hero.tsx`, `src/components/ui/text-reveal.tsx`, `src/components/ui/reveal.tsx`.
+- Registry tipado de projetos (fonte única para carousel, rotas e template) com 4 projetos seed e assets placeholder 9:16 gerados por script — `src/data/types.ts`, `src/data/projects.ts`, `scripts/generate-seed-assets.mjs`, `public/projects/`.
+- Design system dark-only com tokens Tailwind v4 (`#A9FE00` primário, `#4E47E3` secundário, fundo `#0A0A0A`) e fontes Orbitron (display) + Rajdhani (corpo) via `next/font` — `src/app/globals.css`, `src/app/layout.tsx`.
+- Stack de animação e 3D: `motion@12.42.2`, `embla-carousel-react@8.6.0` + `embla-carousel-auto-scroll@8.6.0`, `three@0.185.1`, `@react-three/fiber@9.6.1`, `@react-three/drei@10.7.7`; View Transitions habilitadas em `next.config.ts`.
+- Pipeline spec-driven do projeto em `.sdd/` (constitution, spec EARS, design, tasks, gates e execution log da feature `001-portfolio-core`).
+
+[Unreleased]: https://github.com/claudiosoaresdev/portfolio/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/claudiosoaresdev/portfolio/releases/tag/v0.1.0

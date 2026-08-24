@@ -1,0 +1,218 @@
+{
+  "projects": [
+    {
+      "slug": "nebula-wallet",
+      "name": "Nebula Wallet",
+      "tagline": "A borderless crypto and fiat wallet built for speed.",
+      "description": "Nebula Wallet is an Android-first fintech app that lets users hold, swap, and send both fiat and digital assets from a single balance. It settles transfers optimistically on-device and reconciles with the ledger in the background, so the interface never blocks on the network.",
+      "cover": "/projects/nebula-wallet/cover.png",
+      "screenshot": "/projects/nebula-wallet/screen.png",
+      "device": "android",
+      "year": "2025",
+      "role": "Solo developer",
+      "features": [
+        {
+          "title": "Instant transfers",
+          "description": "Peer-to-peer sends confirm on-device and settle against the ledger asynchronously, so the UI never waits on the network."
+        },
+        {
+          "title": "Unified balance",
+          "description": "Fiat and multi-chain crypto holdings are normalized into one spendable balance with live conversion rates."
+        },
+        {
+          "title": "Biometric vault",
+          "description": "Private keys live in the Android Keystore and every signing action is gated behind biometric or device-credential auth."
+        },
+        {
+          "title": "Spending insights",
+          "description": "On-device categorization turns raw transaction history into weekly cash-flow and budget breakdowns without leaving the phone."
+        }
+      ],
+      "architecture": {
+        "summary": "Built with Kotlin and Jetpack Compose over a clean-architecture core that isolates domain logic from platform concerns. Room backs an offline-first cache while a WorkManager sync engine reconciles local state with the backend. Ktor handles networking and every release ships through a GitHub Actions CI/CD pipeline.",
+        "stack": [
+          "Kotlin",
+          "Jetpack Compose",
+          "Coroutines & Flow",
+          "Room",
+          "WorkManager",
+          "Ktor",
+          "Hilt",
+          "GitHub Actions"
+        ]
+      },
+      "links": {
+        "github": "https://github.com/claudiosoaresdev/nebula-wallet",
+        "playStore": "https://play.google.com/store/apps/details?id=dev.claudiosoares.nebula",
+        "website": "https://nebula-wallet.claudiosoares.dev"
+      },
+      "extras": [
+        {
+          "title": "Offline-first sync",
+          "body": "Every write lands in the local Room store first and is mirrored to a durable outbox. A WorkManager job drains that outbox with exponential backoff and conflict resolution, which keeps balances usable on flaky connections and guarantees eventual consistency once the device is back online."
+        },
+        {
+          "title": "Security model",
+          "body": "Keys are generated in the hardware-backed Keystore and never leave the secure enclave. Sensitive payloads are encrypted at rest with envelope encryption, and every signing operation requires a fresh biometric prompt, so a stolen unlocked phone still cannot move funds."
+        }
+      ]
+    },
+    {
+      "slug": "aurora-fit",
+      "name": "Aurora Fit",
+      "tagline": "Adaptive workout tracking that learns your rhythm.",
+      "description": "Aurora Fit is an iOS fitness tracker that plans, records, and adapts strength and cardio sessions in real time. It reads live sensor data from Apple Watch and HealthKit to adjust targets mid-workout, keeping training honest without a coach in the room.",
+      "cover": "/projects/aurora-fit/cover.png",
+      "screenshot": "/projects/aurora-fit/screen.png",
+      "device": "ios",
+      "year": "2024",
+      "role": "Mobile engineer",
+      "features": [
+        {
+          "title": "Live coaching",
+          "description": "Heart-rate and pace streams from Apple Watch adjust rep targets and rest timers on the fly during a session."
+        },
+        {
+          "title": "Adaptive plans",
+          "description": "Weekly training blocks recalibrate from recovery and completion data so the next session always matches current fitness."
+        },
+        {
+          "title": "HealthKit sync",
+          "description": "Workouts, energy burn, and recovery metrics flow both ways with HealthKit to keep the wider health picture consistent."
+        },
+        {
+          "title": "Rich progress views",
+          "description": "Interactive charts surface volume, personal records, and trend lines across any muscle group or time window."
+        }
+      ],
+      "architecture": {
+        "summary": "Written in Swift with a SwiftUI interface driven by the MVVM pattern and Combine pipelines. A companion watchOS target streams sensor data while HealthKit acts as the source of truth for health metrics. Local session state is persisted with SwiftData and validated by an XCTest suite on every CI run.",
+        "stack": [
+          "Swift",
+          "SwiftUI",
+          "Combine",
+          "watchOS",
+          "HealthKit",
+          "SwiftData",
+          "XCTest",
+          "Fastlane"
+        ]
+      },
+      "links": {
+        "github": "https://github.com/claudiosoaresdev/aurora-fit",
+        "appStore": "https://apps.apple.com/app/aurora-fit/id6478210001"
+      },
+      "extras": [
+        {
+          "title": "Real-time sensor pipeline",
+          "body": "The watchOS extension publishes heart-rate and motion samples over WatchConnectivity into a Combine pipeline on the phone. That stream is throttled and smoothed before it feeds the coaching engine, which lets the app react to effort within a second while avoiding jittery target changes from noisy raw readings."
+        }
+      ]
+    },
+    {
+      "slug": "cipher-notes",
+      "name": "Cipher Notes",
+      "tagline": "End-to-end encrypted notes that sync everywhere.",
+      "description": "Cipher Notes is a cross-platform note-taking app where every note is encrypted on the device before it ever touches the network. It ships from one shared codebase to Android and iOS, so the security model and editing experience stay identical on both platforms.",
+      "cover": "/projects/cipher-notes/cover.png",
+      "screenshot": "/projects/cipher-notes/screen.png",
+      "device": "android",
+      "year": "2024",
+      "role": "Solo developer",
+      "features": [
+        {
+          "title": "Zero-knowledge encryption",
+          "description": "Notes are encrypted with a key derived from the user's passphrase, so the backend only ever stores ciphertext."
+        },
+        {
+          "title": "Conflict-free sync",
+          "description": "A CRDT-based merge engine reconciles edits made offline on multiple devices without ever losing a keystroke."
+        },
+        {
+          "title": "Markdown editor",
+          "description": "A live Markdown editor renders formatting inline while keeping the raw source a single tap away."
+        },
+        {
+          "title": "Instant search",
+          "description": "A local encrypted index makes full-text search feel instant while keeping note contents off any server."
+        }
+      ],
+      "architecture": {
+        "summary": "Built with React Native and TypeScript on a shared domain layer that runs identically across platforms. Encryption is handled by libsodium bindings before data is persisted to an on-device SQLite store. Sync flows through a thin serverless backend that only ever relays opaque ciphertext.",
+        "stack": [
+          "React Native",
+          "TypeScript",
+          "libsodium",
+          "SQLite",
+          "Zustand",
+          "Automerge",
+          "Jest"
+        ]
+      },
+      "links": {
+        "github": "https://github.com/claudiosoaresdev/cipher-notes"
+      }
+    },
+    {
+      "slug": "orbit-tasks",
+      "name": "Orbit Tasks",
+      "tagline": "A calm, keyboard-fast home for everything you have to do.",
+      "description": "Orbit Tasks is an iOS productivity app that blends tasks, projects, and calendar time into a single planning surface. It focuses on fast capture and gentle scheduling, turning a messy inbox into a realistic plan for the day in a few taps.",
+      "cover": "/projects/orbit-tasks/cover.png",
+      "screenshot": "/projects/orbit-tasks/screen.png",
+      "device": "ios",
+      "year": "2026",
+      "role": "Full-stack developer",
+      "features": [
+        {
+          "title": "Frictionless capture",
+          "description": "Natural-language input parses dates, projects, and priorities from a single line as you type."
+        },
+        {
+          "title": "Time blocking",
+          "description": "Drag any task onto the calendar to reserve focus time, with two-way sync back to the system calendar."
+        },
+        {
+          "title": "Smart today view",
+          "description": "A daily agenda ranks tasks by due date, effort, and priority so the most important work surfaces first."
+        },
+        {
+          "title": "Recurring workflows",
+          "description": "Flexible repeat rules cover everything from simple dailies to complex nth-weekday schedules."
+        },
+        {
+          "title": "Live collaboration",
+          "description": "Shared projects update in real time so teammates always see the same board without manual refreshes."
+        }
+      ],
+      "architecture": {
+        "summary": "A SwiftUI client backed by a TypeScript serverless API deployed on edge functions. Realtime collaboration runs over WebSockets with a Postgres backend, while SwiftData keeps a local mirror for offline planning. The full stack ships through a trunk-based CI/CD pipeline with automated preview builds.",
+        "stack": [
+          "Swift",
+          "SwiftUI",
+          "SwiftData",
+          "TypeScript",
+          "Node.js",
+          "PostgreSQL",
+          "WebSockets",
+          "GitHub Actions"
+        ]
+      },
+      "links": {
+        "github": "https://github.com/claudiosoaresdev/orbit-tasks",
+        "appStore": "https://apps.apple.com/app/orbit-tasks/id6612009442",
+        "website": "https://orbit-tasks.claudiosoares.dev"
+      },
+      "extras": [
+        {
+          "title": "Realtime collaboration engine",
+          "body": "Shared projects are synchronized through an operational-transform layer over WebSockets, with every change stamped and ordered server-side. Clients apply optimistic updates immediately and rebase against the authoritative log when it arrives, so two people editing the same project see a consistent board without stepping on each other."
+        },
+        {
+          "title": "Offline planning",
+          "body": "SwiftData holds a full local mirror of tasks and schedule, which means capture and planning work with no connection at all. A background reconciler replays queued mutations when connectivity returns and resolves ordering with server timestamps, keeping the offline experience indistinguishable from the online one."
+        }
+      ]
+    }
+  ]
+}
