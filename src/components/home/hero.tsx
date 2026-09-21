@@ -3,6 +3,7 @@ import TextReveal from "@/components/ui/text-reveal";
 import Reveal from "@/components/ui/reveal";
 import SocialLinks from "@/components/layout/social-links";
 import { getProfile } from "@/data/profile";
+import { assetPath } from "@/lib/site";
 
 // Server component: static HUD atmosphere + client reveal primitives.
 // All copy comes from public/profile.json (edit there, not here).
@@ -53,7 +54,7 @@ export default function Hero() {
 
       {/* Technical micro-label. */}
       <span className="pointer-events-none absolute top-24 left-20 hidden font-body text-xs uppercase tracking-[0.3em] text-muted sm:left-24 sm:block">
-        Portfolio — 2026
+        Portfólio — {new Date().getFullYear()}
       </span>
 
       <div className="relative z-10 mx-auto w-full max-w-6xl lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-16">
@@ -122,7 +123,7 @@ export default function Hero() {
 
             <div className="group relative aspect-[4/5] overflow-hidden rounded-xl border border-foreground/15 bg-foreground/5">
               <Image
-                src={profile.photo}
+                src={assetPath(profile.photo)}
                 alt={profile.photoAlt}
                 fill
                 preload

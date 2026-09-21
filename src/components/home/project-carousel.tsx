@@ -9,15 +9,14 @@ import AutoScroll from "embla-carousel-auto-scroll";
 import { useReducedMotion } from "motion/react";
 
 import type { Project } from "@/data/types";
+import { assetPath } from "@/lib/site";
 
 function CarouselCard({
   project,
   index,
-  preload,
 }: {
   project: Project;
   index: number;
-  preload: boolean;
 }) {
   return (
     <div className="flex-[0_0_auto] pl-4">
@@ -31,13 +30,13 @@ function CarouselCard({
         <ViewTransition name={`project-${project.slug}`} share="morph">
           <div className="relative aspect-[9/16] w-full bg-foreground/5">
             <Image
-              src={project.cover}
+              src={assetPath(project.cover)}
               alt={`${project.name} cover`}
               fill
               sizes="(min-width: 640px) 18rem, 15rem"
-              // `preload` replaces the deprecated `priority` prop in Next 16;
-              // warm only the first cards that can be the LCP element.
-              preload={preload}
+              // Sem `preload`: o carrossel fica abaixo da dobra, então estas
+              // capas nunca são o LCP — pré-carregá-las só roubava banda da
+              // foto do hero, que é. O lazy-load padrão é o certo aqui.
               className="object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out motion-safe:group-hover:scale-105"
             />
             {/* Scrim INSIDE the shared element so the morph snapshot carries
@@ -161,7 +160,6 @@ export default function ProjectCarousel({
               key={project.slug}
               project={project}
               index={index}
-              preload={index < 2}
             />
           ))}
         </div>

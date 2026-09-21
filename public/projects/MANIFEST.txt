@@ -1,8 +1,8 @@
-/projects/nebula-wallet/cover.png
-/projects/nebula-wallet/screen.png
-/projects/aurora-fit/cover.png
-/projects/aurora-fit/screen.png
-/projects/cipher-notes/cover.png
-/projects/cipher-notes/screen.png
-/projects/orbit-tasks/cover.png
-/projects/orbit-tasks/screen.png
+/projects/nebula-wallet/cover.webp
+/projects/nebula-wallet/screen.webp
+/projects/aurora-fit/cover.webp
+/projects/aurora-fit/screen.webp
+/projects/cipher-notes/cover.webp
+/projects/cipher-notes/screen.webp
+/projects/orbit-tasks/cover.webp
+/projects/orbit-tasks/screen.webp

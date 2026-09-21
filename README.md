@@ -35,19 +35,31 @@ npm run lint && npx tsc --noEmit && npm run build
 ## Estrutura
 
 ```
+assets/                   # originais NÃO publicados (fora de public/)
+  raw/                    # PNGs originais das imagens; fonte do pipeline WebP
+  fonts/Orbitron-Bold.ttf # fonte usada ao gerar as imagens de Open Graph
+  icon.svg                # marca; fonte dos favicons e ícones do manifest
 public/
+  og/                     # imagens de Open Graph 1200x630 (geradas)
   profile.json            # conteúdo do hero da home (texto, foto, skills, redes)
-  images/profile.png      # retrato do hero
+  images/profile.webp     # retrato do hero
+  icons/                  # ícones 192/512 do web app manifest
   projects/projects.json  # fonte de dados dos projetos
-  projects/<slug>/        # cover.png (9:16) + screen.png (tela do app)
+  projects/<slug>/        # cover.webp (9:16) + screen.webp (tela do app)
 src/
-  app/                    # rotas App Router (/ e /projects/[slug])
+  app/                    # rotas App Router, sitemap, robots e manifest
   components/home/        # hero + carrossel
   components/project/     # hero do projeto, seções, showcase 3D
   components/layout/      # header, footer, links sociais
+  components/seo/         # bloco JSON-LD
   data/                   # loaders + tipos (profile.ts, projects.ts, types.ts)
+  lib/                    # site.ts (config canônica), structured-data.ts
 scripts/
   generate-seed-assets.mjs  # gerador de arte placeholder (cover/screen)
+  optimize-images.mjs       # PNG -> WebP no tamanho de exibição
+  generate-og.mjs           # imagens de Open Graph como PNG estáticos
+  og-frame.mjs              # layout compartilhado dessas imagens
+  generate-icons.mjs        # rasteriza assets/icon.svg nos tamanhos de ícone
   capture-demo.mjs          # captura os frames do GIF de demo
 docs/assets/              # mídia usada neste README
 ```
@@ -75,11 +87,34 @@ Assets esperados:
 
 | Arquivo | Dimensão | Uso |
 |---------|----------|-----|
-| `cover.png`  | 1080×1920 (9:16) | card do carrossel e hero do projeto |
-| `screen.png` | 1080×2340 | textura da tela do smartphone 3D |
+| `cover.webp`  | 1080×1920 (9:16) | card do carrossel e hero do projeto |
+| `screen.webp` | 1080×2340 | textura da tela do smartphone 3D |
 
 Arte placeholder pode ser regerada com `node scripts/generate-seed-assets.mjs`
 (macOS — usa `qlmanage`/`sips` para rasterizar os SVGs).
+
+### Pipeline de imagem
+
+Solte o PNG em `public/` e rode:
+
+```bash
+npm run images
+```
+
+O script arquiva o original em `assets/raw/` (que não é publicado), grava o
+WebP no tamanho de exibição em `public/` e remove o PNG servido. Depois é só
+apontar o JSON para o `.webp`. Rodar de novo sempre parte do original
+arquivado, então não há perda por recompressão. `npm run images:check` falha
+se algum WebP estiver faltando — bom para o CI.
+
+Isso não é cosmético: em `output: "export"` não existe o otimizador da Next, e
+o que está em `public/` é literalmente o que o browser baixa. O pipeline levou
+os assets de 5,7 MB para 288 KB.
+
+### Marca e ícones
+
+`assets/icon.svg` é a fonte. `npm run icons` gera `src/app/icon.svg`,
+`src/app/apple-icon.png` e os ícones do manifest em `public/icons/`.
 
 > As páginas são estáticas (SSG). Em dev o JSON é relido a cada request; em
 > produção, editar o JSON exige `npm run build`.
@@ -106,10 +141,62 @@ Flags do script: `--out <dir>`, `--width` (padrão 1280), `--height` (padrão 80
 Subir `fps`/`scale`/`max_colors` melhora a imagem e engorda o arquivo — o preset
 acima fica em ~3,7 MB para ~10 s.
 
+## SEO
+
+A configuração canônica fica em `src/lib/site.ts` — URL, títulos, locale e cor
+de tema saem todos dali. **Defina `NEXT_PUBLIC_SITE_URL` no ambiente de build**
+se o domínio for diferente do padrão: é essa URL que resolve o `canonical` e as
+URLs absolutas de Open Graph.
+
+O que é gerado automaticamente a partir dos JSON de conteúdo:
+
+- `/sitemap.xml` e `/robots.txt` (`src/app/sitemap.ts`, `src/app/robots.ts`)
+- `/manifest.webmanifest`
+- JSON-LD `Person` + `WebSite` na home e `SoftwareApplication` +
+  `BreadcrumbList` em cada projeto (`src/lib/structured-data.ts`)
+
+Imagens de Open Graph 1200×630 (uma para a home, uma por projeto) são geradas
+por `npm run og` em `public/og/`, desenhadas com `next/og` usando a Orbitron
+versionada em `assets/fonts/`. `npm run og:check` falha se faltar alguma.
+
+São PNG estáticos, e não a convenção `opengraph-image.tsx` da Next, de
+propósito: no export aquela convenção emite arquivos sem extensão, que o
+GitHub Pages serve como `application/octet-stream` — e aí o scraper do
+LinkedIn/Facebook recusa a imagem. Rode `npm run og` sempre que mudar título,
+tagline ou stack de um projeto.
+
 ## Deploy
 
-Otimizado para Vercel — `npm run build` gera as páginas de projeto via
-`generateStaticParams`.
+GitHub Pages, via `.github/workflows/deploy.yml` — todo push em `main` builda e
+publica. `output: "export"` gera `out/`, que é o artefato enviado.
+
+A URL é `https://claudiosoaresdev.github.io/portfolio/`, ou seja, o site não
+fica na raiz do domínio. O workflow passa duas variáveis vindas do próprio
+`actions/configure-pages`, então nada é fixado no código:
+
+| Variável | Valor | Para quê |
+|---|---|---|
+| `NEXT_PUBLIC_BASE_PATH` | `/portfolio` | `basePath`/`assetPrefix` e o `assetPath()` de `src/lib/site.ts` |
+| `NEXT_PUBLIC_SITE_URL` | `https://claudiosoaresdev.github.io/portfolio` | canonical, Open Graph, sitemap, JSON-LD |
+
+Três detalhes do Pages que o código já cobre:
+
+- `public/.nojekyll` — sem ele o Jekyll descarta tudo que começa com `_`,
+  incluindo a pasta `_next/` inteira
+- `trailingSlash: true` — o Pages não tem regra de rewrite, então só a forma
+  `/rota/index.html` resolve sem 404
+- `assetPath()` nas imagens e na textura do WebGL — com `images.unoptimized`,
+  `next/image` não prefixa o basePath sozinho, e o `useTexture` do drei faz
+  fetch direto, fora do roteador
+
+Para rodar o build do Pages localmente:
+
+```bash
+NEXT_PUBLIC_BASE_PATH=/portfolio \
+NEXT_PUBLIC_SITE_URL=https://claudiosoaresdev.github.io/portfolio \
+npm run build
+npx serve out   # ou sirva out/ sob o caminho /portfolio
+```
 
 ## Changelog
 

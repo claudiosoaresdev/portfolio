@@ -65,7 +65,11 @@ export default function TextReveal({
         <Fragment key={`${w}-${i}`}>
           {/* Mask box clips the word; pb keeps descenders from being cut. */}
           <span className="inline-block overflow-hidden pb-[0.15em]">
-            <motion.span className="inline-block" variants={word}>
+            <motion.span
+              data-reveal
+              className="inline-block"
+              variants={word}
+            >
               {w}
             </motion.span>
           </span>

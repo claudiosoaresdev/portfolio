@@ -17,7 +17,7 @@ export default function SiteHeader() {
           Claudio Soares <span className="text-primary">Dev</span>
         </Link>
         <span className="pointer-events-auto font-body text-[0.7rem] uppercase tracking-[0.25em] text-muted">
-          Portfolio / 2026
+          Portfólio / {new Date().getFullYear()}
         </span>
       </div>
     </header>

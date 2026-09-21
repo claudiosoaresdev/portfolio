@@ -2,6 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProject, getProjects } from "@/data/projects";
+import JsonLd from "@/components/seo/json-ld";
+import { absoluteUrl, ogImage } from "@/lib/site";
+import {
+  projectBreadcrumbSchema,
+  projectSchema,
+} from "@/lib/structured-data";
 import ProjectHero from "@/components/project/project-hero";
 import DeviceShowcase from "@/components/project/device-showcase";
 import {
@@ -27,12 +33,32 @@ export async function generateMetadata({
   const project = getProject(slug);
 
   if (!project) {
-    return { title: "Not found — claudio soares dev" };
+    return { title: "Projeto não encontrado" };
   }
 
+  const url = absoluteUrl(`/projects/${slug}`);
+  const image = ogImage(slug, `${project.name} — ${project.tagline}`);
+  // A descrição de busca usa o parágrafo completo (mais contexto para o
+  // snippet); a tagline fica como título social, onde espaço é curto.
+  const description = project.description;
+
   return {
-    title: `${project.name} — claudio soares dev`,
-    description: project.tagline,
+    title: project.name,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title: `${project.name} — ${project.tagline}`,
+      description,
+      images: [image],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${project.name} — ${project.tagline}`,
+      description,
+      images: [image],
+    },
   };
 }
 
@@ -51,7 +77,10 @@ export default async function ProjectPage({
   const nextIndex = () => String(++step).padStart(2, "0");
 
   return (
-    <main>
+    <main id="conteudo">
+      <JsonLd data={projectSchema(project)} />
+      <JsonLd data={projectBreadcrumbSchema(project)} />
+
       <ProjectHero project={project} />
 
       <DeviceShowcase project={project} />
@@ -73,7 +102,7 @@ export default async function ProjectPage({
             href="/"
             className="inline-flex items-center gap-2 font-body text-xs uppercase tracking-[0.3em] text-muted transition-colors hover:text-primary"
           >
-            <span aria-hidden="true">←</span> All projects
+            <span aria-hidden="true">←</span> Todos os projetos
           </Link>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { getProjects } from "@/data/projects";
 
 export default function Home() {
   return (
-    <main>
+    <main id="conteudo">
       <Hero />
       <section aria-labelledby="projects-heading" className="pb-28 pt-8">
         <div className="mx-auto max-w-6xl px-6 pb-10">

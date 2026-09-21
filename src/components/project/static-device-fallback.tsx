@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { DeviceKind } from "@/data/types";
+import { assetPath } from "@/lib/site";
 
 /**
  * CSS-only phone mock. Server-safe (no browser APIs) so it can render as the
@@ -21,7 +22,7 @@ export default function StaticDeviceFallback({
         {/* Screen */}
         <div className="absolute inset-[4px] overflow-hidden rounded-[2.2rem]">
           <Image
-            src={screenshot}
+            src={assetPath(screenshot)}
             alt={alt}
             fill
             sizes="20rem"

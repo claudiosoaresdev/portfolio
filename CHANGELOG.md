@@ -10,24 +10,36 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### Added
+- Deploy no GitHub Pages: workflow que builda e publica a cada push em `main`, com `basePath`/`assetPrefix` e URL canônica vindos do `actions/configure-pages` (nada fixado no código) — `.github/workflows/deploy.yml`, `next.config.ts`, `public/.nojekyll`.
+- Imagens de Open Graph 1200×630 geradas como PNG estáticos — uma para a home, uma por projeto, no visual HUD do site, desenhadas com `next/og` e Orbitron versionada no repo. PNG estático em vez da convenção `opengraph-image.tsx` porque no export ela emite arquivos sem extensão, que o GitHub Pages serve como `application/octet-stream` e os scrapers sociais recusam — `scripts/generate-og.mjs`, `scripts/og-frame.mjs`, `assets/fonts/`.
+- Metadata de SEO completa: Open Graph, Twitter Card, `metadataBase`, canonical por rota, `robots`/`googlebot`, `theme-color` e `color-scheme`, com origem única em `src/lib/site.ts` — `src/app/layout.tsx`, `src/app/projects/[slug]/page.tsx`.
+- JSON-LD derivado dos mesmos JSON que alimentam a UI: `Person` + `WebSite` na home, `SoftwareApplication` + `BreadcrumbList` em cada projeto — `src/lib/structured-data.ts`, `src/components/seo/json-ld.tsx`.
+- `/sitemap.xml`, `/robots.txt` e `/manifest.webmanifest` gerados a partir do registry de projetos — `src/app/sitemap.ts`, `robots.ts`, `manifest.ts`.
+- Identidade visual de ícone (moldura HUD chanfrada + barra lime) como fonte SVG única, rasterizada para favicon, apple-touch-icon e ícones 192/512 do manifest — `assets/icon.svg`, `scripts/generate-icons.mjs`.
+- Pipeline de imagem PNG → WebP no tamanho de exibição, com o original arquivado fora de `public/` e modo `--check` para CI — `scripts/optimize-images.mjs`.
+- Skip-link como primeiro tab-stop, pulando o header fixo — `src/app/layout.tsx`.
+
 ### Changed
+- Assets do site otimizados de 5,7 MB para 288 KB (-95%): foto do hero 1,7 MB → 49 KB, capas ~780 KB → 18–29 KB. Em `output: "export"` não existe o otimizador da Next, então `public/` é literalmente o que o browser baixa — `public/images/`, `public/projects/`.
+- Rajdhani reduzida de 5 pesos para 2 (400 e 700, os únicos usados no código): 6 preloads de fonte caíram para 3, liberando banda do caminho crítico do LCP — `src/app/layout.tsx`.
+- Capas do carrossel não são mais pré-carregadas: ficam abaixo da dobra e nunca são o LCP, então o `preload` só competia com a foto do hero — `src/components/home/project-carousel.tsx`.
+- Idioma do site corrigido de `en` para `pt-BR`, com toda a metadata reescrita em português — o conteúdo sempre foi pt-BR, o que sinalizava idioma errado aos buscadores — `src/app/layout.tsx`, `src/lib/site.ts`.
+- Ano do header, do footer e do micro-label do hero derivado da data do build em vez de fixado em 2026 — `src/components/layout/`, `src/components/home/hero.tsx`.
 - Hero da home virou apresentação de dev: headline "Engenheiro de Software Fullstack", descrição profissional, chips de skills, retrato em quadro HUD (zoom suave no hover) e ícones sociais — todo o conteúdo (eyebrow, título, descrição, foto, tags, redes) editável em `public/profile.json` via loader `src/data/profile.ts` — `src/components/home/hero.tsx`.
 - Footer troca "Built with Next.js / Three.js" por ícones sociais pequenos (SVG inline, sem dependência) com URLs do `profile.json`; componente `SocialLinks` compartilhado entre footer (sm) e hero (md) — `src/components/layout/social-links.tsx`, `site-footer.tsx`.
 - Fonte de dados dos projetos migrada do registry TypeScript para `public/projects/projects.json` — adicionar/remover projeto é editar só o JSON (+ assets); em dev o arquivo é relido a cada request, em produção exige rebuild (páginas são SSG) — `src/data/projects.ts` virou loader com validação.
 - Carousel da home sem duplicação de slides: loop e auto-scroll agora só ativam quando a soma dos cards ultrapassa a viewport (medida via ResizeObserver); com poucos cards (ou 1) o track fica parado e centralizado, sem fades de borda — `src/components/home/project-carousel.tsx`.
 
 ### Fixed
+- Imagens 404 sob `basePath`: com `images.unoptimized`, `next/image` não prefixa o basePath sozinho, então foto do hero e capas apontariam para fora do subcaminho do repo — `assetPath()` aplicado em cada `<Image>` — `src/lib/site.ts`.
+- Textura do smartphone 3D 404 sob `basePath`: `useTexture` do drei faz fetch direto, fora do roteador da Next, e a falha caía silenciosamente no fallback estático — `src/components/project/device-scene.tsx`.
+- Texto das animações de entrada invisível sem JavaScript: o HTML renderiza com `translateY(110%)` dentro de máscara `overflow-hidden`, então o conteúdo existia no DOM mas não na tela — inclusive para crawlers de IA, que em geral não executam JS — `src/app/layout.tsx`, `src/components/ui/`.
 - Flash do frame do smartphone sumindo por alguns ms até o modelo 3D aparecer: o frame estático agora fica montado sob o canvas transparente e só faz fade-out quando a cena reporta o primeiro frame texturizado (`onReady` no carregamento da textura) — crossfade contínuo verificado por medição — `src/components/project/device-canvas.tsx`, `device-scene.tsx`.
 - Capa "crua" durante a transição shared-element e conteúdo do hero "pipocando" depois: o scrim agora vive dentro do elemento compartilhado (card e hero) para o morph carregar a máscara junto; o texto do hero é revelado em stagger após o morph, com loader HUD animado enquanto a capa carrega — `src/components/project/project-hero.tsx`, `src/components/home/project-carousel.tsx`, `src/app/globals.css`.
 - Fase "The app" reaparecendo no fim do showcase: motion compila `useTransform(scrollYProgress)` em keyframes WAAPI/ScrollTimeline, e range terminando antes de 1 ganha keyframe final implícito com o valor base (`opacity: 1`) — todos os ranges agora cobrem o domínio 0–1 com endpoints explícitos — `src/components/project/device-showcase.tsx`.
 - Sobreposição de textos das fases ("The app" aparecendo sob "Platform") no showcase 3D durante o scroll — janelas de opacidade das camadas empilhadas agora são sequenciais, sem overlap — `src/components/project/device-showcase.tsx`.
 - Warning de console `THREE.Clock: This module has been deprecated` — `three` fixado em `0.182.0` (última versão sem a deprecation; `@react-three/fiber` 9.x instancia `Clock` internamente e o fix upstream só existe no v10 canary).
-
-### Added
--
-
-### Changed
--
 
 ## [0.1.0] - 2026-07-03
 

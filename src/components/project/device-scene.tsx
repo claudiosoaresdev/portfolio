@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ContactShadows, RoundedBox, useTexture } from "@react-three/drei";
+import { assetPath } from "@/lib/site";
 import * as THREE from "three";
 import type { MotionValue } from "motion/react";
 import type { DeviceKind } from "@/data/types";
@@ -50,7 +51,10 @@ function PhoneModel({
     },
     [invalidate, onReady],
   );
-  const texture = useTexture(screenshot, configureTexture);
+  // `useTexture` faz fetch direto, sem passar pelo roteador da Next, então o
+  // basePath tem que ser aplicado à mão — sem isso a textura 404 sob
+  // /<repo> e a cena cai no fallback estático.
+  const texture = useTexture(assetPath(screenshot), configureTexture);
 
   const isIos = device === "ios";
   // Subtly squarer silhouette for iOS, rounder for Android.

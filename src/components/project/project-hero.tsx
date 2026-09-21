@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ViewTransition } from "react";
 import { motion } from "motion/react";
 import type { Project } from "@/data/types";
+import { assetPath } from "@/lib/site";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -48,7 +49,7 @@ export default function ProjectHero({ project }: { project: Project }) {
       <ViewTransition name={`project-${project.slug}`} share="morph">
         <div className="absolute inset-0">
           <Image
-            src={project.cover}
+            src={assetPath(project.cover)}
             alt={`${project.name} cover`}
             fill
             priority

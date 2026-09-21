@@ -1,0 +1,67 @@
+name: Deploy no GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Permite disparar manualmente pela aba Actions.
+  workflow_dispatch:
+
+# O token só precisa ler o repo e publicar no Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Um deploy por vez; pushes em sequência não competem pelo mesmo ambiente.
+# `cancel-in-progress: false` deixa o deploy em andamento terminar.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Configurar Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - run: npm ci
+
+      # Falha cedo e com mensagem clara se alguém commitou um JSON apontando
+      # para um asset que nunca foi gerado.
+      - name: Verificar assets gerados
+        run: npm run images:check && npm run og:check
+
+      - run: npm run lint
+      - run: npx tsc --noEmit
+
+      - name: Build estático
+        env:
+          # Ambos vêm da própria configuração do Pages: em repo de projeto,
+          # base_path é /<repo> e base_url inclui esse prefixo. Assim nada
+          # precisa ser fixado no código quando o repo ou o domínio mudar.
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.base_url }}
+        run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
