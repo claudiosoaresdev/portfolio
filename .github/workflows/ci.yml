@@ -1,0 +1,47 @@
+name: CI
+
+# Gate de qualidade dos PRs — o mesmo que o deploy roda antes de publicar,
+# só que sem publicar nada. Quebrar aqui é quebrar antes do merge, e não
+# depois, com o site no ar.
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Push novo no mesmo PR cancela a verificação anterior, que já ficou velha.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Falha se alguém commitou conteúdo (JSON ou post) sem gerar os assets.
+      - name: Verificar assets gerados
+        run: npm run images:check && npm run og:check
+
+      - run: npm run lint
+      - run: npx tsc --noEmit
+
+      # Build sob basePath, como no GitHub Pages de repo de projeto: pega
+      # caminho de asset ou link de post que só quebra com o prefixo.
+      - name: Build estático
+        env:
+          NEXT_PUBLIC_BASE_PATH: /portfolio
+          NEXT_PUBLIC_SITE_URL: https://example.github.io/portfolio
+        run: npm run build
