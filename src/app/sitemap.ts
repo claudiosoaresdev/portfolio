@@ -45,6 +45,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.4,
       }),
     ),
+    {
+      url: absoluteUrl("/privacidade"),
+      lastModified,
+      changeFrequency: "yearly" as const,
+      priority: 0.2,
+    },
     // Posts têm data de verdade no frontmatter, então não caem no fallback
     // da data de build usado acima.
     ...posts.map((post) => ({

@@ -3,6 +3,8 @@ import { Orbitron, Rajdhani } from "next/font/google";
 import MotionProvider from "@/components/ui/motion-provider";
 import SiteHeader from "@/components/layout/site-header";
 import SiteFooter from "@/components/layout/site-footer";
+import Analytics from "@/components/consent/analytics";
+import CookieBanner from "@/components/consent/cookie-banner";
 import JsonLd from "@/components/seo/json-ld";
 import { personSchema, websiteSchema } from "@/lib/structured-data";
 import { absoluteUrl, ogImage, site } from "@/lib/site";
@@ -120,7 +122,10 @@ export default function RootLayout({
           <SiteHeader />
           {children}
           <SiteFooter />
+          <CookieBanner />
         </MotionProvider>
+
+        <Analytics />
 
         <JsonLd data={personSchema()} />
         <JsonLd data={websiteSchema()} />
