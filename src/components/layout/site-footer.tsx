@@ -14,7 +14,7 @@ export default function SiteFooter() {
           <span>
             © {new Date().getFullYear()} {site.name}
           </span>
-          <Link href="/privacidade" className="transition-colors hover:text-primary">
+          <Link href="/privacy" className="transition-colors hover:text-primary">
             Privacidade
           </Link>
           <CookiePreferencesButton />
