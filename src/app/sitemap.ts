@@ -46,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
     ),
     {
-      url: absoluteUrl("/privacidade"),
+      url: absoluteUrl("/privacy"),
       lastModified,
       changeFrequency: "yearly" as const,
       priority: 0.2,
