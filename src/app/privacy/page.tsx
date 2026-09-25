@@ -12,10 +12,10 @@ const description =
 export const metadata: Metadata = {
   title,
   description,
-  alternates: { canonical: absoluteUrl("/privacidade") },
+  alternates: { canonical: absoluteUrl("/privacy") },
   openGraph: {
     type: "website",
-    url: absoluteUrl("/privacidade"),
+    url: absoluteUrl("/privacy"),
     title: `${title} — ${site.name}`,
     description,
     images: [ogImage("home", site.title)],

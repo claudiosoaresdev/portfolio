@@ -48,7 +48,7 @@ export default function CookieBanner() {
                   é usado. Nada de publicidade, nada de rastreamento entre
                   sites. Você pode recusar sem perder nenhuma funcionalidade.{" "}
                   <Link
-                    href="/privacidade"
+                    href="/privacy"
                     className="text-primary underline decoration-primary/40 underline-offset-4 transition-colors hover:decoration-primary"
                   >
                     Política de Privacidade
