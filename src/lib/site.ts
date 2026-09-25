@@ -38,6 +38,14 @@ export const site = {
   themeColor: "#0A0A0A",
 } as const;
 
+/** Textos do blog — compartilhados entre a página /blog e o feed RSS. */
+export const blog = {
+  title: "Blog",
+  description:
+    "Notas de engenharia de Claudio Soares sobre desenvolvimento mobile, " +
+    "arquitetura e construção de produtos.",
+} as const;
+
 /** Monta uma URL absoluta a partir de um caminho de rota ou asset. */
 export function absoluteUrl(path = "/"): string {
   return `${site.url}${path.startsWith("/") ? path : `/${path}`}`;

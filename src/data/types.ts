@@ -43,3 +43,44 @@ export interface Project {
   links: ProjectLinks; // all optional
   extras?: ProjectExtra[]; // optional, rendered after architecture
 }
+
+/**
+ * Metadados de um post — vêm do frontmatter de content/blog/<arquivo>.md.
+ * O slug não vem do frontmatter: é o nome do arquivo sem a data do prefixo.
+ * `cover` segue a mesma regra dos assets de projeto: caminho cru, sem basePath.
+ */
+export interface PostMeta {
+  slug: string;
+  title: string;
+  description: string; // vira meta description e resumo na listagem
+  date: string; // "YYYY-MM-DD" — data de publicação
+  updated?: string; // "YYYY-MM-DD" — última revisão relevante
+  tags: string[];
+  draft: boolean; // só aparece em `next dev`
+  cover?: string; // "/blog/<slug>/cover.webp"
+  readingMinutes: number;
+}
+
+export interface Post extends PostMeta {
+  html: string; // corpo já convertido; gerado no build a partir do markdown
+}
+
+/** Árvore do arquivo do blog: ano → mês → dia → posts. Mais recente primeiro. */
+export interface ArchiveYear {
+  year: string; // "2026"
+  count: number;
+  months: ArchiveMonth[];
+}
+
+export interface ArchiveMonth {
+  key: string; // "2026-09" — id estável para o DOM
+  label: string; // "setembro"
+  count: number;
+  days: ArchiveDay[];
+}
+
+export interface ArchiveDay {
+  key: string; // "2026-09-24"
+  label: string; // "24"
+  posts: { slug: string; title: string }[];
+}

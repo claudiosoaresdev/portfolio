@@ -5,13 +5,14 @@
 
 ---
 projeto: claudiosoaresdev-portfolio
-ultima_sessao: 2026-07-03
+ultima_sessao: 2026-09-24
 fase_atual: idle (feature 001 done)
 feature_atual: none
 ---
 
 ## Technical decisions
 
+- **2026-09-24** — `[blog]` Blog em `.md` puro em `content/blog/`, lido via fs + gray-matter e convertido com unified (remark-gfm → rehype-slug/autolink/pretty-code+shiki → string) em `src/data/posts.ts`; HTML injetado no build. Rejeitados: `@next/mdx` (sem frontmatter nativo, plugins só por nome no Turbopack), next-mdx-remote (só compensa com JSX no post), Velite/Content Collections (build step extra). Data vem do frontmatter (checkout raso do CI não tem histórico git). Links/imagens de raiz recebem basePath via `src/lib/rehype-site-links.ts`. OG de post em `public/og/blog/<slug>.png` (subpasta evita colisão com slug de projeto). Trade-off: sem componentes React dentro dos posts.
 - **2026-07-03** — `[feature 001]` Dados dos projetos movidos para `public/projects/projects.json` (pedido do usuário); loader fs em `src/data/projects.ts` (cache só em produção — dev relê a cada chamada). Páginas continuam SSG → editar JSON em produção requer `npm run build`. Spec REQ-005 amendado (registry TS → JSON).
 - **2026-07-03** — `[feature 001]` Carousel: duplicação de slides removida; `active`/`loop`/AutoScroll condicionados a overflow real (soma das larguras dos cards vs viewport, ResizeObserver + rAF). N=1 → 1 card estático centrado. Verificado via CDP: 1440px parado/centrado, 768px rolando, 1 projeto → 1 card parado.
 
@@ -48,7 +49,7 @@ feature_atual: none
 
 ## Deferred ideas
 
-- **2026-07-02** — Blog/contact/i18n/CMS. Deferred from feature 001 because v1 is showcase-only. Revisit when M1 ships.
+- **2026-07-02** — Contact/i18n/CMS (blog entregue em 2026-09-24). Deferred from feature 001 because v1 is showcase-only. Revisit when M1 ships.
 
 ## Pending uncertainties
 

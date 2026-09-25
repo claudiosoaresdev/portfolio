@@ -35,6 +35,7 @@ npm run lint && npx tsc --noEmit && npm run build
 ## Estrutura
 
 ```
+content/blog/             # posts do blog, um .md por post
 assets/                   # originais NÃO publicados (fora de public/)
   raw/                    # PNGs originais das imagens; fonte do pipeline WebP
   fonts/Orbitron-Bold.ttf # fonte usada ao gerar as imagens de Open Graph
@@ -92,6 +93,43 @@ Assets esperados:
 
 Arte placeholder pode ser regerada com `node scripts/generate-seed-assets.mjs`
 (macOS — usa `qlmanage`/`sips` para rasterizar os SVGs).
+
+### Blog
+
+Um post = um arquivo `.md` em `content/blog/`, versionado junto com o código.
+Nome do arquivo: `YYYY-MM-DD-slug-em-kebab-case.md` — o slug da URL é o nome
+sem o prefixo de data (`/blog/slug-em-kebab-case`).
+
+```md
+---
+title: "Título do post"
+description: "Resumo — vira meta description e texto da listagem."
+date: 2026-09-24          # obrigatório, YYYY-MM-DD
+updated: 2026-10-02       # opcional
+tags: [android, kotlin]   # opcional
+draft: true               # opcional — só aparece em `npm run dev`
+cover: /blog/slug/cover.webp  # opcional — imagem do JSON-LD
+---
+
+Corpo em markdown (GFM: tabelas, listas de tarefa, blocos de código com
+destaque de sintaxe no build).
+```
+
+A data vale do frontmatter, não do git: o checkout do CI é raso e não tem o
+histórico. Campo obrigatório faltando ou data inválida quebram o build com a
+mensagem apontando o arquivo.
+
+Imagens do post vão em `public/blog/<slug>/` e são referenciadas com caminho da
+raiz (`![alt](/blog/<slug>/foto.webp)`) — o basePath é aplicado na conversão. PNG
+passa pelo `npm run images` como o resto do site.
+
+A listagem pagina de 10 em 10 (`POSTS_PER_PAGE` em `src/data/posts.ts`): `/blog`
+é a página 1 e `/blog/page/2`, `/blog/page/3`… são geradas conforme o número de
+posts.
+
+Publicar: criar o `.md`, rodar `npm run og` (gera `public/og/blog/<slug>.png`),
+commitar e dar push. Também saem automaticamente `/blog/rss.xml` e as entradas
+no sitemap.
 
 ### Pipeline de imagem
 
@@ -152,10 +190,13 @@ O que é gerado automaticamente a partir dos JSON de conteúdo:
 
 - `/sitemap.xml` e `/robots.txt` (`src/app/sitemap.ts`, `src/app/robots.ts`)
 - `/manifest.webmanifest`
-- JSON-LD `Person` + `WebSite` na home e `SoftwareApplication` +
-  `BreadcrumbList` em cada projeto (`src/lib/structured-data.ts`)
+- JSON-LD `Person` + `WebSite` na home, `SoftwareApplication` +
+  `BreadcrumbList` em cada projeto e `Blog`/`BlogPosting` no blog
+  (`src/lib/structured-data.ts`)
+- `/blog/rss.xml` (`src/app/blog/rss.xml/route.ts`)
 
-Imagens de Open Graph 1200×630 (uma para a home, uma por projeto) são geradas
+Imagens de Open Graph 1200×630 (home, uma por projeto, índice do blog e uma
+por post) são geradas
 por `npm run og` em `public/og/`, desenhadas com `next/og` usando a Orbitron
 versionada em `assets/fonts/`. `npm run og:check` falha se faltar alguma.
 
