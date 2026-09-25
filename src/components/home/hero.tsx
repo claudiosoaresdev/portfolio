@@ -2,6 +2,7 @@ import Image from "next/image";
 import TextReveal from "@/components/ui/text-reveal";
 import Reveal from "@/components/ui/reveal";
 import SocialLinks from "@/components/layout/social-links";
+import HudBackdrop from "@/components/ui/hud-backdrop";
 import { getProfile } from "@/data/profile";
 import { assetPath } from "@/lib/site";
 
@@ -11,46 +12,7 @@ export default function Hero() {
   const profile = getProfile();
   return (
     <section className="relative flex min-h-svh flex-col justify-center overflow-hidden px-6 pt-28 pb-24 sm:px-10 lg:px-16">
-      {/* Indigo glow, offset asymmetrically toward the top-right. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 -right-32 h-[38rem] w-[38rem] rounded-full bg-secondary/20 blur-[120px]"
-      />
-      {/* Lime glow near the headline, lower-left. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute top-1/2 left-[6%] h-72 w-72 -translate-y-1/2 rounded-full bg-primary/10 blur-[100px]"
-      />
-
-      {/* 1px technical grid; currentColor derives from the foreground token. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 text-foreground opacity-[0.05]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
-          backgroundSize: "72px 72px",
-        }}
-      />
-      {/* Vignette fades the grid + glows to the background token at the edges. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 text-background"
-        style={{
-          backgroundImage:
-            "radial-gradient(ellipse at center, transparent 35%, currentColor 92%)",
-        }}
-      />
-
-      {/* Corner-bracket frame — two opposite corners for the HUD precision feel. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute top-24 left-6 h-10 w-10 border-t border-l border-foreground/20 sm:left-10"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-6 bottom-6 h-10 w-10 border-r border-b border-foreground/20 sm:right-10"
-      />
+      <HudBackdrop />
 
       {/* Technical micro-label. */}
       <span className="pointer-events-none absolute top-24 left-20 hidden font-body text-xs uppercase tracking-[0.3em] text-muted sm:left-24 sm:block">

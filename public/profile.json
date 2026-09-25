@@ -4,14 +4,14 @@
     "lines": ["Engenheiro", "de Software"],
     "accent": "Fullstack"
   },
-  "description": "Engenheiro de Software com 7 anos de experiência com desenvolvimento de aplicativos móveis modernos, com atuação principal em Android nativo com Kotlin. Também possuo experiência profissional com React Native, Flutter, além de sólida base em iOS nativo, arquitetura mobile, integrações com APIs e construção de produtos digitais escaláveis.",
+  "description": "Engenheiro de Software com 7 anos de experiência com desenvolvimento de aplicativos móveis modernos, com atuação principal em Android nativo com Kotlin. Também possuo experiência profissional com React Native, Flutter, além de sólida base em iOS / Swift, arquitetura mobile, integrações com APIs e construção de produtos digitais escaláveis.",
   "photo": "/images/profile.webp",
   "photoAlt": "Retrato de Claudio Soares",
   "skills": [
     "Android / Kotlin",
+    "iOS / Swift",
     "React Native",
     "Flutter",
-    "iOS nativo",
     "Arquitetura mobile"
   ],
   "social": {

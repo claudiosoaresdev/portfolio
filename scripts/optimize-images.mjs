@@ -49,6 +49,13 @@ const RULES = [
     maxWidth: 1080, // textura WebGL do device 3D — aguenta zoom
     quality: 80,
   },
+  {
+    // Imagens dos posts (public/blog/<slug>/*.png): a coluna de leitura tem
+    // no máximo 48rem (768px) → 2x.
+    match: (rel) => rel.startsWith("blog/"),
+    maxWidth: 1536,
+    quality: 78,
+  },
 ];
 
 /** Lista recursiva de arquivos, relativa a `dir`. */
