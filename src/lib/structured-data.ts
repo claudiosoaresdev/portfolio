@@ -6,7 +6,7 @@
  * public/projects/projects.json), então nunca saem de sincronia com o site.
  */
 import { getProfile } from "@/data/profile";
-import type { Project } from "@/data/types";
+import type { PostMeta, Project } from "@/data/types";
 import { absoluteUrl, site } from "./site";
 
 /** Ordem estável das redes, para o array `sameAs` não oscilar entre builds. */
@@ -93,6 +93,81 @@ export function projectBreadcrumbSchema(project: Project) {
         position: 2,
         name: project.name,
         item: absoluteUrl(`/projects/${project.slug}`),
+      },
+    ],
+  };
+}
+
+/**
+ * O índice do blog: um Blog cujos itens são os BlogPosting abaixo. Nas
+ * páginas 2+ da listagem, `blogPost` traz só os posts daquela página, mas o
+ * `@id` continua o do blog — é a mesma entidade vista em outra página.
+ */
+export function blogSchema(posts: PostMeta[], path = "/blog") {
+  const url = absoluteUrl("/blog");
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "@id": `${url}#blog`,
+    url,
+    mainEntityOfPage: absoluteUrl(path),
+    name: `Blog — ${site.name}`,
+    inLanguage: site.lang,
+    author: { "@id": absoluteUrl("/#person") },
+    blogPost: posts.map((post) => ({
+      "@type": "BlogPosting",
+      headline: post.title,
+      url: absoluteUrl(`/blog/${post.slug}`),
+      datePublished: post.date,
+    })),
+  };
+}
+
+/**
+ * Cada post é um BlogPosting — com datas de publicação e revisão, que é o que
+ * buscadores usam para mostrar a data no resultado.
+ */
+export function postSchema(post: PostMeta) {
+  const url = absoluteUrl(`/blog/${post.slug}`);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `${url}#post`,
+    mainEntityOfPage: url,
+    url,
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    dateModified: post.updated ?? post.date,
+    inLanguage: site.lang,
+    image: absoluteUrl(post.cover ?? `/og/blog/${post.slug}.png`),
+    keywords: post.tags.join(", "),
+    author: { "@id": absoluteUrl("/#person") },
+    publisher: { "@id": absoluteUrl("/#person") },
+    isPartOf: { "@id": absoluteUrl("/blog#blog") },
+  };
+}
+
+/** Início › Blog › post. */
+export function postBreadcrumbSchema(post: PostMeta) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Início", item: site.url },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: absoluteUrl("/blog"),
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: absoluteUrl(`/blog/${post.slug}`),
       },
     ],
   };

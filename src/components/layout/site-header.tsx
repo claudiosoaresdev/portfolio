@@ -16,9 +16,20 @@ export default function SiteHeader() {
         >
           Claudio Soares <span className="text-primary">Dev</span>
         </Link>
-        <span className="pointer-events-auto font-body text-[0.7rem] uppercase tracking-[0.25em] text-muted">
-          Portfólio / {new Date().getFullYear()}
-        </span>
+        <nav
+          aria-label="Principal"
+          className="pointer-events-auto flex items-center gap-6 font-body text-[0.7rem] uppercase tracking-[0.25em]"
+        >
+          <Link
+            href="/blog"
+            className="text-foreground transition-colors hover:text-primary"
+          >
+            Blog
+          </Link>
+          <span className="hidden text-muted sm:inline">
+            Portfólio / {new Date().getFullYear()}
+          </span>
+        </nav>
       </div>
     </header>
   );

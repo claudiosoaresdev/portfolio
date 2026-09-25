@@ -88,7 +88,9 @@ export function ogFrame({ eyebrow, title, subtitle, footer }) {
         style: {
           display: "flex",
           marginTop: 28,
-          fontSize: title.length > 24 ? 68 : 84,
+          // Títulos de post passam fácil de 40 caracteres; sem o terceiro
+          // degrau eles empurram subtítulo e rodapé para fora do quadro.
+          fontSize: title.length > 40 ? 54 : title.length > 24 ? 68 : 84,
           lineHeight: 1.05,
           letterSpacing: -1,
           textTransform: "uppercase",

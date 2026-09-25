@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme inline {
   --color-background: #0A0A0A;
@@ -88,4 +89,189 @@ body {
   100% {
     transform: translateX(300%);
   }
+}
+
+/* Painel de leitura do blog: vidro escuro sobre a atmosfera HUD. A camada é um
+   irmão atrás do conteúdo (não o próprio container) para que a máscara que
+   esfuma as bordas não esfume também o texto. */
+.blur-panel {
+  position: relative;
+  isolation: isolate;
+}
+
+.blur-panel::before {
+  content: "";
+  position: absolute;
+  inset: -2.5rem -1rem;
+  z-index: -1;
+  background-color: color-mix(in srgb, var(--color-background) 72%, transparent);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  /* Duas rampas lineares intersectadas: a borda some nos quatro lados. */
+  --feather: 2.5rem;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent),
+    linear-gradient(to bottom, transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent),
+    linear-gradient(to bottom, transparent, #000 var(--feather), #000 calc(100% - var(--feather)), transparent);
+  mask-composite: intersect;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .blur-panel::before {
+    inset: -3rem -3.5rem;
+    --feather: 3.5rem;
+  }
+}
+
+/* Árvore do arquivo do blog (ano → mês → dia → slug), em <details> nativos. */
+.archive-tree ul {
+  /* Cada nível entra ~1,5rem (um "tab"); a linha-guia fica alinhada ao
+     centro do chevron do nível pai. */
+  margin-left: 0.2rem;
+  padding-left: 1.35rem;
+  border-left: 1px solid color-mix(in srgb, var(--color-foreground) 12%, transparent);
+}
+
+.archive-tree summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  cursor: pointer;
+  list-style: none;
+  color: var(--color-muted);
+  transition: color 150ms;
+}
+
+.archive-tree summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevron HUD no lugar do triângulo nativo; gira ao abrir. */
+.archive-tree summary::before {
+  content: "";
+  flex: none;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 1px solid var(--color-primary);
+  border-bottom: 1px solid var(--color-primary);
+  transform: rotate(-45deg);
+  transition: transform 200ms;
+}
+
+.archive-tree details[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.archive-tree summary:hover {
+  color: var(--color-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-tree summary::before {
+    transition: none;
+  }
+}
+
+/* Corpo dos posts do blog — o HTML vem do markdown (src/data/posts.ts), então
+   o estilo é por elemento, sobre o plugin de typography, trocando a paleta
+   neutra dele pelos tokens do site. */
+.post-body {
+  --tw-prose-invert-body: var(--color-muted);
+  --tw-prose-invert-headings: var(--color-foreground);
+  --tw-prose-invert-bold: var(--color-foreground);
+  --tw-prose-invert-links: var(--color-primary);
+  --tw-prose-invert-bullets: var(--color-primary);
+  --tw-prose-invert-counters: var(--color-primary);
+  --tw-prose-invert-quotes: var(--color-foreground);
+  --tw-prose-invert-quote-borders: var(--color-primary);
+  --tw-prose-invert-code: var(--color-foreground);
+  --tw-prose-invert-hr: #2a2a2a;
+  --tw-prose-invert-th-borders: #2a2a2a;
+  --tw-prose-invert-td-borders: #1f1f1f;
+  font-family: var(--font-body);
+  font-size: 1.1875rem;
+  line-height: 1.75;
+}
+
+.post-body :is(h2, h3, h4) {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  scroll-margin-top: 5rem; /* não esconde o título sob o header fixo */
+}
+
+.post-body h2 {
+  font-size: 1.5rem;
+}
+
+.post-body h3 {
+  font-size: 1.15rem;
+}
+
+/* O título inteiro é o link da âncora — não pinta de verde como link comum. */
+.post-body .heading-anchor {
+  color: inherit;
+  text-decoration: none;
+}
+
+.post-body .heading-anchor:hover {
+  color: var(--color-primary);
+}
+
+.post-body a:not(.heading-anchor) {
+  text-underline-offset: 3px;
+}
+
+.post-body :not(pre) > code {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  padding: 0.1em 0.35em;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.post-body :not(pre) > code::before,
+.post-body :not(pre) > code::after {
+  content: none;
+}
+
+/* Blocos de código (rehype-pretty-code + shiki) */
+.post-body pre {
+  background: #111111;
+  border: 1px solid #2a2a2a;
+  border-left: 2px solid var(--color-primary);
+  border-radius: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  padding: 1.1rem 0;
+}
+
+.post-body pre > code {
+  display: grid;
+}
+
+.post-body pre [data-line] {
+  padding: 0 1.25rem;
+}
+
+.post-body figure[data-rehype-pretty-code-figure] {
+  margin: 2rem 0;
+}
+
+/* Trecho sendo lido pelo "Ouvir o post" (src/components/blog/post-reader.tsx). */
+.post-body [data-reading] {
+  color: var(--color-foreground);
+  background: color-mix(in srgb, var(--color-primary) 7%, transparent);
+  box-shadow: -0.75rem 0 0 color-mix(in srgb, var(--color-primary) 7%, transparent),
+    -0.9rem 0 0 var(--color-primary);
+  transition: background-color 200ms, color 200ms;
+}
+
+.post-body img {
+  border: 1px solid #2a2a2a;
 }
