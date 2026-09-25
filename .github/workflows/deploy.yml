@@ -50,6 +50,10 @@ jobs:
           # precisa ser fixado no código quando o repo ou o domínio mudar.
           NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
           NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.base_url }}
+          # ID de medição do GA4, cadastrado como variável do repositório
+          # (Settings → Secrets and variables → Actions → Variables). Sem ele
+          # o build sai sem analytics e sem banner de cookies.
+          NEXT_PUBLIC_GA_ID: ${{ vars.GA_MEASUREMENT_ID }}
         run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
