@@ -17,6 +17,8 @@ export interface HeroProfile {
   photoAlt: string;
   skills: string[];
   social?: SocialLinks;
+  /** PDF do currículo, caminho a partir de public/. */
+  resume?: string;
 }
 
 // Hero copy lives in public/profile.json so presentation text, photo and

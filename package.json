@@ -1,6 +1,7 @@
 {
   "name": "portfolio",
   "version": "0.1.0",
+  "description": "Vitrine pessoal de projetos Build to learn: Android, monetização, iOS, Kotlin Multiplatform e backend em Node. Next.js, SSG no GitHub Pages.",
   "private": true,
   "scripts": {
     "dev": "next dev",

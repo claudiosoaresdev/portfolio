@@ -116,6 +116,7 @@ export default function Hero() {
               Outside the bracketed frame so the corner marks hug the photo. */}
           <SocialLinks
             social={profile.social}
+            resume={profile.resume}
             size="md"
             className="mt-8 justify-center"
           />
