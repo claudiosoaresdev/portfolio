@@ -1,8 +1,16 @@
 # Claudio Soares — Portfólio
 
-Portfólio pessoal de engenharia de software: home com apresentação em estética
-HUD-futurista, carrossel de projetos e página por projeto com showcase 3D de
-smartphone dirigido por scroll.
+Vitrine pessoal de projetos **Build to learn**: cada projeto nasce de uma
+pergunta que eu queria responder e é construído para aprender, com o processo
+registrado no blog. Foco em Android (Kotlin e Jetpack Compose) e monetização,
+com expansão para iOS, Kotlin Multiplatform e backend em Node.
+
+O site tem uma home com apresentação em estética HUD-futurista, um carrossel de
+projetos, uma página por projeto com showcase 3D de smartphone dirigido por
+scroll e um blog em markdown. Está em construção: os projetos são adicionados
+conforme ficam prontos.
+
+Online em <https://claudiosoaresdev.github.io/portfolio/>.
 
 ![Passeio pelo portfólio: scroll da home, abertura do primeiro projeto, showcase 3D e retorno à home](docs/assets/demo.gif)
 

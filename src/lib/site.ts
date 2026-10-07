@@ -31,9 +31,9 @@ export const site = {
   lang: "pt-BR",
   title: "Claudio Soares — Engenheiro de Software Fullstack",
   description:
-    "Portfólio de Claudio Soares, engenheiro de software com 7 anos de " +
-    "experiência em Android nativo (Kotlin), React Native, Flutter e iOS. " +
-    "Projetos, arquitetura mobile e construção de interfaces.",
+    "Portfólio de Claudio Soares, engenheiro Android sênior com mais de 8 " +
+    "anos de experiência em mobile e foco em monetização. Projetos Build to " +
+    "learn em Android, iOS, Kotlin Multiplatform e Node.",
   /** Cor da barra do browser no mobile — token --color-background. */
   themeColor: "#0A0A0A",
 } as const;
