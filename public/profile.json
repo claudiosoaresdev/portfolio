@@ -4,7 +4,7 @@
     "lines": ["Engenheiro", "de Software"],
     "accent": "Fullstack"
   },
-  "description": "Engenheiro de Software com 7 anos de experiência com desenvolvimento de aplicativos móveis modernos, com atuação principal em Android nativo com Kotlin. Também possuo experiência profissional com React Native, Flutter, além de sólida base em iOS / Swift, arquitetura mobile, integrações com APIs e construção de produtos digitais escaláveis.",
+  "description": "Engenheiro Android sênior com mais de 8 anos de experiência em mobile, especializado em monetização: Google Play Billing e o ciclo de vida das assinaturas. Atuo com Android nativo (Kotlin e Jetpack Compose), Clean Architecture, MVVM e MVI, e também com React Native, Flutter e APIs em Node. Este portfólio reúne projetos Build to learn, construídos para aprender e documentados aqui, e hoje se expande para iOS e Kotlin Multiplatform.",
   "photo": "/images/profile.webp",
   "photoAlt": "Retrato de Claudio Soares",
   "skills": [
@@ -18,5 +18,6 @@
     "github": "https://github.com/claudiosoaresdev",
     "linkedin": "https://www.linkedin.com/in/claudiosoaresdev",
     "instagram": "https://www.instagram.com/claudio.soares.dev"
-  }
+  },
+  "resume": "/resume/Luis_Claudio_Silva_-_Android_Engineer.pdf"
 }
