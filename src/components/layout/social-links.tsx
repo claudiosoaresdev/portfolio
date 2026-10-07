@@ -1,4 +1,5 @@
 import type { SocialLinks as SocialLinksData } from "@/data/profile";
+import { assetPath } from "@/lib/site";
 
 // Inline SVGs keep the footer dependency-free (P-008); paths follow the
 // official brand marks, drawn at a 24px grid and scaled down via CSS.
@@ -28,6 +29,9 @@ const ICONS: Record<
   },
 };
 
+// Material "download" mark, same 24px grid as the brand icons above.
+const DOWNLOAD_PATH = "M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z";
+
 const ORDER: (keyof SocialLinksData)[] = [
   "github",
   "linkedin",
@@ -40,14 +44,17 @@ export default function SocialLinks({
   social,
   size = "sm",
   className = "",
+  resume,
 }: {
   social?: SocialLinksData;
   size?: "sm" | "md";
   className?: string;
+  /** Caminho (a partir de public/) do PDF do currículo; vira o último ícone. */
+  resume?: string;
 }) {
-  if (!social) return null;
-  const entries = ORDER.filter((key) => social[key]);
-  if (entries.length === 0) return null;
+  if (!social && !resume) return null;
+  const entries = social ? ORDER.filter((key) => social[key]) : [];
+  if (entries.length === 0 && !resume) return null;
 
   const iconSize = size === "md" ? "h-5 w-5" : "h-3.5 w-3.5";
 
@@ -57,7 +64,7 @@ export default function SocialLinks({
     >
       {entries.map((key) => {
         const { label, path } = ICONS[key];
-        const href = social[key]!;
+        const href = social![key]!;
         const external = !href.startsWith("mailto:");
         return (
           <li key={key}>
@@ -80,6 +87,35 @@ export default function SocialLinks({
           </li>
         );
       })}
+      {resume ? (
+        <li className="relative">
+          <a
+            href={assetPath(resume)}
+            download
+            aria-label="Baixar currículo (PDF)"
+            className="peer block text-muted transition-colors duration-300 hover:text-primary focus-visible:text-primary"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden
+              className={`${iconSize} fill-current`}
+            >
+              <path d={DOWNLOAD_PATH} />
+            </svg>
+          </a>
+          {/* Popup: visível no hover e no foco do teclado (irmão do link). */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 translate-y-1 whitespace-nowrap border border-primary/40 bg-background/95 px-3 py-1.5 font-body text-[0.65rem] uppercase tracking-[0.2em] text-primary opacity-0 backdrop-blur-sm transition-[opacity,transform] duration-200 peer-hover:translate-y-0 peer-hover:opacity-100 peer-focus-visible:translate-y-0 peer-focus-visible:opacity-100"
+          >
+            Baixar currículo · PDF
+            <span
+              aria-hidden
+              className="absolute top-full left-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-r border-b border-primary/40 bg-background"
+            />
+          </span>
+        </li>
+      ) : null}
     </ul>
   );
 }
