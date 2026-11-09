@@ -54,6 +54,9 @@ jobs:
           # (Settings → Secrets and variables → Actions → Variables). Sem ele
           # o build sai sem analytics e sem banner de cookies.
           NEXT_PUBLIC_GA_ID: ${{ vars.GA_MEASUREMENT_ID }}
+          # Token da verificação do Search Console (tag meta). Não é segredo:
+          # aparece no HTML publicado. Variável do repositório, como o GA.
+          NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.GOOGLE_SITE_VERIFICATION }}
         run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
