@@ -31,6 +31,10 @@ export const metadata: Metadata = {
   // Base absoluta para canonical e imagens de OG — sem ela as URLs saem
   // relativas e nenhum crawler externo consegue resolvê-las.
   metadataBase: new URL(site.url),
+  // Gera <meta name="google-site-verification"> no <head>, só quando há token.
+  verification: site.googleSiteVerification
+    ? { google: site.googleSiteVerification }
+    : undefined,
   title: {
     default: site.title,
     template: `%s — ${site.name}`,

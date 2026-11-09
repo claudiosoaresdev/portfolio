@@ -20,9 +20,20 @@ export const basePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(
 );
 
 export const site = {
+  // Padrão = URL do GitHub Pages deste repo. O deploy sobrescreve via
+  // NEXT_PUBLIC_SITE_URL com o base_url do Pages.
   url: (
-    process.env.NEXT_PUBLIC_SITE_URL ?? `https://claudiosoares.dev${basePath}`
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    "https://claudiosoaresdev.github.io/portfolio"
   ).replace(/\/$/, ""),
+  /**
+   * Token da tag `<meta name="google-site-verification">` do Search Console.
+   * Público por natureza (fica no HTML publicado), então fica versionado aqui.
+   * NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION sobrescreve; string vazia = sem tag.
+   */
+  googleSiteVerification:
+    process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+    "LIa4JyLlc-NzQF4Q5ZFYjBjb0StAuVDoA0RwL_zaLDI",
   name: "Claudio Soares Dev",
   /** Pessoa por trás do site — vira o schema.org/Person e o meta `author`. */
   author: "Claudio Soares",
