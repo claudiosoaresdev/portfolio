@@ -8,6 +8,7 @@
 import { getProfile } from "@/data/profile";
 import type { PostMeta, Project } from "@/data/types";
 import { absoluteUrl, site } from "./site";
+import { deviceSpec, hasDesktop } from "@/data/platform";
 
 /** Ordem estável das redes, para o array `sameAs` não oscilar entre builds. */
 const SOCIAL_KEYS = ["github", "linkedin", "instagram", "x"] as const;
@@ -53,8 +54,20 @@ export function websiteSchema() {
  */
 export function projectSchema(project: Project) {
   const url = absoluteUrl(`/projects/${project.slug}`);
-  const storeUrl =
-    project.links.playStore ?? project.links.appStore ?? project.links.website;
+  const web = hasDesktop(project.device);
+  const storeUrl = web
+    ? (project.links.website ?? project.links.playStore ?? project.links.appStore)
+    : (project.links.playStore ?? project.links.appStore ?? project.links.website);
+  const phoneOs = deviceSpec(project).phone === "ios" ? "iOS" : "Android";
+  const operatingSystem =
+    project.device === "web"
+      ? "Web"
+      : project.device === "fullstack"
+        ? `Web, ${phoneOs}`
+        : phoneOs;
+  const screenshot = project.desktopScreenshot
+    ? [absoluteUrl(project.desktopScreenshot), absoluteUrl(project.screenshot)]
+    : absoluteUrl(project.screenshot);
 
   return {
     "@context": "https://schema.org",
@@ -65,9 +78,9 @@ export function projectSchema(project: Project) {
     description: project.description,
     abstract: project.tagline,
     applicationCategory: "MobileApplication",
-    operatingSystem: project.device === "ios" ? "iOS" : "Android",
+    operatingSystem,
     image: absoluteUrl(project.cover),
-    screenshot: absoluteUrl(project.screenshot),
+    screenshot,
     dateCreated: project.year,
     inLanguage: site.lang,
     keywords: project.architecture.stack.join(", "),

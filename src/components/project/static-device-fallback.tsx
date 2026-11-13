@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { DeviceKind } from "@/data/types";
+import type { PhoneKind } from "@/data/types";
 import { assetPath } from "@/lib/site";
 
 /**
@@ -12,7 +12,7 @@ export default function StaticDeviceFallback({
   screenshot,
   alt,
 }: {
-  device: DeviceKind;
+  device: PhoneKind;
   screenshot: string;
   alt: string;
 }) {

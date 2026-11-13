@@ -4,7 +4,7 @@ import { Component, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
 import type { MotionValue } from "motion/react";
-import type { DeviceKind } from "@/data/types";
+import type { PhoneKind } from "@/data/types";
 import StaticDeviceFallback from "./static-device-fallback";
 
 const DeviceScene = dynamic(() => import("./device-scene"), { ssr: false });
@@ -58,7 +58,7 @@ export default function DeviceCanvas({
   progress,
   alt,
 }: {
-  device: DeviceKind;
+  device: PhoneKind;
   screenshot: string;
   progress: MotionValue<number>;
   alt: string;

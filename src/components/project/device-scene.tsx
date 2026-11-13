@@ -6,7 +6,7 @@ import { ContactShadows, RoundedBox, useTexture } from "@react-three/drei";
 import { assetPath } from "@/lib/site";
 import * as THREE from "three";
 import type { MotionValue } from "motion/react";
-import type { DeviceKind } from "@/data/types";
+import type { PhoneKind } from "@/data/types";
 import StaticDeviceFallback from "./static-device-fallback";
 
 // Three.js material/light colors are not CSS, so the design tokens are mirrored
@@ -32,7 +32,7 @@ function PhoneModel({
   screenshot,
   onReady,
 }: {
-  device: DeviceKind;
+  device: PhoneKind;
   screenshot: string;
   onReady?: () => void;
 }) {
@@ -116,7 +116,7 @@ function DeviceRig({
   progress,
   onReady,
 }: {
-  device: DeviceKind;
+  device: PhoneKind;
   screenshot: string;
   progress: MotionValue<number>;
   onReady?: () => void;
@@ -152,7 +152,7 @@ export default function DeviceScene({
   alt,
   onReady,
 }: {
-  device: DeviceKind;
+  device: PhoneKind;
   screenshot: string;
   progress: MotionValue<number>;
   alt: string;

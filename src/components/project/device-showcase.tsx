@@ -12,6 +12,7 @@ import {
 } from "motion/react";
 
 import type { Project } from "@/data/types";
+import { deviceSpec, platformLabel } from "@/data/platform";
 import DeviceCanvas from "./device-canvas";
 import StaticDeviceFallback from "./static-device-fallback";
 
@@ -45,7 +46,7 @@ function PlatformPhase({ project }: { project: Project }) {
       <MicroLabel>Platform</MicroLabel>
       <div>
         <span className="inline-flex border border-primary/40 px-3 py-1 font-body text-sm uppercase tracking-widest text-primary">
-          {project.device === "ios" ? "iOS" : "Android"}
+          {platformLabel(project.device)}
         </span>
       </div>
       <p className="font-body text-xs uppercase tracking-[0.3em] text-muted">
@@ -149,7 +150,7 @@ export default function DeviceShowcase({ project }: { project: Project }) {
           </div>
           <div className="order-1 h-[28rem] lg:order-2">
             <StaticDeviceFallback
-              device={project.device}
+              device={deviceSpec(project).phone}
               screenshot={project.screenshot}
               alt={alt}
             />
@@ -189,7 +190,7 @@ export default function DeviceShowcase({ project }: { project: Project }) {
           <div className="h-full w-full">
             {canvasInView ? (
               <DeviceCanvas
-                device={project.device}
+                device={deviceSpec(project).phone}
                 screenshot={project.screenshot}
                 progress={progress}
                 alt={alt}
@@ -198,7 +199,7 @@ export default function DeviceShowcase({ project }: { project: Project }) {
               /* Same box the frame occupies inside DeviceCanvas, so the
                  deferred mount swap doesn't shift or resize the phone. */
               <StaticDeviceFallback
-                device={project.device}
+                device={deviceSpec(project).phone}
                 screenshot={project.screenshot}
                 alt={alt}
               />

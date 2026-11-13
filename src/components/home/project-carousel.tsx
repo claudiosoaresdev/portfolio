@@ -10,6 +10,7 @@ import { useReducedMotion } from "motion/react";
 
 import type { Project } from "@/data/types";
 import { assetPath } from "@/lib/site";
+import { platformLabel } from "@/data/platform";
 
 function CarouselCard({
   project,
@@ -70,7 +71,7 @@ function CarouselCard({
               <span aria-hidden className="mx-1.5 text-foreground/30">
                 /
               </span>
-              {project.device}
+              {platformLabel(project.device)}
             </p>
           </div>
         </div>
