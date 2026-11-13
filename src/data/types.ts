@@ -89,6 +89,7 @@ export interface ProjectCopy {
  */
 export interface Project {
   slug: string; // url-safe, unique
+  placeholder?: boolean; // demo: só aparece em `next dev` (ou com SHOW_PLACEHOLDER_PROJECTS=true); some do build de produção
   name: string;
   tagline: string; // short hero line
   description: string; // 2-3 sentence paragraph
