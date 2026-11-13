@@ -243,6 +243,258 @@
       }
     },
     {
+      "slug": "tarot-club",
+      "name": "Tarot Club",
+      "tagline": "A daily tarot ritual for self-reflection, read on your own phone.",
+      "description": "Tarot Club is an Android app that turns tarot into a daily ritual of self-knowledge: a mirror to reflect with, never a prediction of the future. Draw the card of the day, run three-card spreads, hear the reading aloud and keep everything in a private journal. The interpretation is written by an AI that runs on the device, so the question and the cards never leave the phone.",
+      "cover": "/projects/tarot-club/cover.webp",
+      "screenshot": "/projects/tarot-club/screen.webp",
+      "device": "android",
+      "year": "2026",
+      "role": "Product, design and Android development",
+      "features": [
+        {
+          "title": "Card of the day",
+          "description": "One card per day with a morning notification, the moon phase of the day and a reveal that can be read upright or reversed."
+        },
+        {
+          "title": "Spreads with a question",
+          "description": "Single-card reflection, three cards as past, present and trend or situation, obstacle and advice, and readings for someone else."
+        },
+        {
+          "title": "AI that stays on the device",
+          "description": "The interpretation is generated offline by a model downloaded once to the phone, so questions and cards are never sent to a server."
+        },
+        {
+          "title": "Journal with history",
+          "description": "Every reading and personal note is saved to a searchable journal with filters by week, month and favorites."
+        },
+        {
+          "title": "Your deck, your atmosphere",
+          "description": "Visual themes and card styles such as Rider-Waite-Smith and Tarot de Marseille, with the full 78-card deck or only the 22 major arcana."
+        },
+        {
+          "title": "Control over your data",
+          "description": "Export the whole journal as JSON or delete the account and every reading at any time, straight from the settings."
+        }
+      ],
+      "gallery": [
+        {
+          "src": "/projects/tarot-club/gallery/navegacao.mp4",
+          "type": "video",
+          "frame": "mobile",
+          "caption": "Navigating the app",
+          "alt": "Looping screen recording of Tarot Club on a phone: the home with the card of the day, the spreads, the journal and the visual shop."
+        },
+        {
+          "src": "/projects/tarot-club/gallery/home.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Home and card of the day",
+          "alt": "Home screen greeting the user with the card of the day, the Ace of Cups, and the reveal button."
+        },
+        {
+          "src": "/projects/tarot-club/gallery/revelacao.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Reveal and on-device AI",
+          "alt": "Reveal screen with the Ace of Cups, an upright and reversed switch and the on-device AI interpretation."
+        },
+        {
+          "src": "/projects/tarot-club/gallery/tiragens.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Spreads",
+          "alt": "Spreads screen where the user writes a question and picks one card, three cards or a reading for someone else."
+        },
+        {
+          "src": "/projects/tarot-club/gallery/diario.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Journal",
+          "alt": "Journal screen with search, filters and the history of readings grouped by date."
+        },
+        {
+          "src": "/projects/tarot-club/gallery/temas.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Themes",
+          "alt": "Visual shop with themes such as Noite Serena and Atelier Arcana."
+        },
+        {
+          "src": "/projects/tarot-club/gallery/estilos-cartas.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Card styles",
+          "alt": "Card styles tab comparing the Rider-Waite-Smith and the Tarot de Marseille versions of The Fool."
+        },
+        {
+          "src": "/projects/tarot-club/gallery/configuracoes.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Settings",
+          "alt": "Settings with daily ritual, deck and reading options."
+        },
+        {
+          "src": "/projects/tarot-club/gallery/faq.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Frequently asked questions",
+          "alt": "Frequently asked questions about tarot, the AI interpretation and Premium."
+        },
+        {
+          "src": "/projects/tarot-club/gallery/onboarding.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Onboarding",
+          "alt": "Onboarding screen introducing one question per day."
+        },
+        {
+          "src": "/projects/tarot-club/gallery/modelo-ia.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Downloading the AI",
+          "alt": "Screen explaining that a model will be downloaded to the phone so readings work offline."
+        }
+      ],
+      "architecture": {
+        "summary": "Native Android app in Kotlin with Jetpack Compose and Material 3, organized by feature on top of a design system and Gradle convention plugins. Hilt provides dependencies, Navigation 3 handles the flows and Firebase covers authentication, the private journal in Firestore and Remote Config flags. The tarot interpretation runs on the device with LiteRT-LM and ML Kit GenAI, and purchases go through Google Play Billing.",
+        "build": [
+          "The code is split by feature (home, readings, journal, profile, store, onboarding) over a shared design system. Build logic lives in convention plugins, so every module is configured the same way, and there are two flavors, homolog and production, to keep tests away from real data.",
+          "Privacy shaped the architecture. The reading is produced by a language model that the app downloads once and runs locally, so the question and the cards stay on the phone. Only the journal is stored in the cloud, scoped to its owner, with export and delete built in.",
+          "Unit tests run with Robolectric, MockK and Turbine, screenshots are verified with Roborazzi, and releases ship through a scripted pipeline with a closed testing track on Google Play."
+        ],
+        "stack": [
+          "Kotlin",
+          "Jetpack Compose",
+          "Material 3",
+          "Hilt",
+          "Navigation 3",
+          "Coroutines & Flow",
+          "WorkManager",
+          "Firebase Auth",
+          "Firestore",
+          "Remote Config",
+          "LiteRT-LM",
+          "ML Kit GenAI",
+          "Google Play Billing",
+          "Roborazzi",
+          "Robolectric"
+        ]
+      },
+      "links": {
+        "website": "https://clubetarot.com.br"
+      },
+      "extras": [
+        {
+          "title": "On-device interpretation",
+          "body": "After the first launch the app offers to download an AI model of about 1 GB. From then on every reading is interpreted offline, without sending the question or the cards anywhere. The trade-off is intentional: a bigger first download and a simpler reading than a cloud model in exchange for real privacy, with a clear notice on devices too limited to run it."
+        },
+        {
+          "title": "Reflection, not prediction",
+          "body": "The whole experience is written as a mirror for reflection. The interface and the AI prompts never predict the future and never give health or financial advice, and the rules of tarot and the FAQ inside the app explain how each spread is meant to be read."
+        }
+      ],
+      "translations": {
+        "pt": {
+          "tagline": "Um ritual diário de tarô para autoconhecimento, lido no seu próprio celular.",
+          "description": "O Tarot Club é um app Android que transforma o tarô em um ritual diário de autoconhecimento: um espelho para refletir, nunca uma previsão do futuro. Tire a carta do dia, faça tiragens de três cartas, ouça a leitura em voz alta e guarde tudo em um diário privado. A interpretação é escrita por uma IA que roda no aparelho, então a pergunta e as cartas nunca saem do celular.",
+          "role": "Produto, design e desenvolvimento Android",
+          "features": [
+            {
+              "title": "Carta do dia",
+              "description": "Uma carta por dia com notificação matinal, a fase da lua do dia e uma revelação que pode ser lida direta ou invertida."
+            },
+            {
+              "title": "Tiragens com pergunta",
+              "description": "Reflexão de uma carta, três cartas como passado, presente e tendência ou situação, obstáculo e conselho, e leituras para outra pessoa."
+            },
+            {
+              "title": "IA que fica no aparelho",
+              "description": "A interpretação é gerada offline por um modelo baixado uma vez para o celular, então perguntas e cartas nunca são enviadas a um servidor."
+            },
+            {
+              "title": "Diário com histórico",
+              "description": "Cada leitura e nota pessoal vai para um diário com busca e filtros por semana, mês e favoritas."
+            },
+            {
+              "title": "Seu baralho, sua atmosfera",
+              "description": "Temas visuais e estilos de carta como Rider-Waite-Smith e Tarot de Marselha, com o baralho completo de 78 cartas ou só os 22 Arcanos Maiores."
+            },
+            {
+              "title": "Controle sobre seus dados",
+              "description": "Exporte todo o diário em JSON ou exclua a conta e todas as leituras quando quiser, direto nas configurações."
+            }
+          ],
+          "architecture": {
+            "summary": "App Android nativo em Kotlin com Jetpack Compose e Material 3, organizado por feature sobre um design system e convention plugins do Gradle. O Hilt fornece as dependências, o Navigation 3 cuida dos fluxos e o Firebase cobre autenticação, o diário privado no Firestore e as flags do Remote Config. A interpretação do tarô roda no aparelho com LiteRT-LM e ML Kit GenAI, e as compras passam pelo Google Play Billing.",
+            "build": [
+              "O código é dividido por feature (início, leituras, diário, perfil, loja, onboarding) sobre um design system compartilhado. A lógica de build vive em convention plugins, então todo módulo é configurado do mesmo jeito, e há dois flavors, homolog e production, para manter os testes longe de dados reais.",
+              "A privacidade moldou a arquitetura. A leitura é produzida por um modelo de linguagem que o app baixa uma vez e roda localmente, então a pergunta e as cartas ficam no celular. Só o diário fica na nuvem, restrito ao dono, com exportação e exclusão embutidas.",
+              "Os testes unitários usam Robolectric, MockK e Turbine, as telas são verificadas com Roborazzi, e as versões saem por um pipeline com script e uma faixa de teste fechado no Google Play."
+            ]
+          },
+          "extras": [
+            {
+              "title": "Interpretação no aparelho",
+              "body": "Depois da primeira abertura, o app oferece baixar um modelo de IA de cerca de 1 GB. A partir daí toda leitura é interpretada offline, sem enviar a pergunta nem as cartas para lugar nenhum. O custo é proposital: um primeiro download maior e uma leitura mais simples que a de um modelo na nuvem, em troca de privacidade real, com aviso claro nos aparelhos limitados demais para rodá-lo."
+            },
+            {
+              "title": "Reflexão, não previsão",
+              "body": "Toda a experiência é escrita como um espelho para reflexão. A interface e os prompts da IA nunca preveem o futuro e nunca dão conselho de saúde ou finanças, e as regras do tarô e o FAQ dentro do app explicam como ler cada tiragem."
+            }
+          ],
+          "gallery": [
+            {
+              "caption": "Navegando pelo app",
+              "alt": "Gravação de tela em loop do Tarot Club no celular: o início com a carta do dia, as tiragens, o diário e a loja visual."
+            },
+            {
+              "caption": "Início e carta do dia",
+              "alt": "Tela inicial com a saudação ao usuário, a carta do dia, o Ás de Copas, e o botão de revelação."
+            },
+            {
+              "caption": "Revelação e IA no aparelho",
+              "alt": "Tela de revelação com o Ás de Copas, o seletor direto e invertido e a interpretação da IA no aparelho."
+            },
+            {
+              "caption": "Tiragens",
+              "alt": "Tela de tiragens onde a pessoa escreve a pergunta e escolhe uma carta, três cartas ou uma leitura para outra pessoa."
+            },
+            {
+              "caption": "Diário",
+              "alt": "Tela do diário com busca, filtros e o histórico de leituras agrupado por data."
+            },
+            {
+              "caption": "Temas",
+              "alt": "Loja visual com temas como Noite Serena e Atelier Arcana."
+            },
+            {
+              "caption": "Estilos de carta",
+              "alt": "Aba de estilos de carta comparando as versões Rider-Waite-Smith e Tarot de Marselha de O Louco."
+            },
+            {
+              "caption": "Configurações",
+              "alt": "Configurações com ritual diário, baralho e opções de leitura."
+            },
+            {
+              "caption": "Perguntas frequentes",
+              "alt": "Perguntas frequentes sobre tarô, a interpretação com IA e o Premium."
+            },
+            {
+              "caption": "Onboarding",
+              "alt": "Tela de onboarding apresentando uma pergunta por dia."
+            },
+            {
+              "caption": "Baixando a IA",
+              "alt": "Tela que explica que um modelo será baixado para o celular para as leituras funcionarem offline."
+            }
+          ]
+        }
+      },
+      "heroCover": "/projects/tarot-club/hero.webp"
+    },
+    {
       "slug": "nebula-wallet",
       "name": "Nebula Wallet",
       "tagline": "A borderless crypto and fiat wallet built for speed.",
