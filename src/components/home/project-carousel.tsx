@@ -10,6 +10,7 @@ import { useReducedMotion } from "motion/react";
 
 import type { Project } from "@/data/types";
 import { assetPath } from "@/lib/site";
+import { platformLabel } from "@/data/platform";
 
 function CarouselCard({
   project,
@@ -37,7 +38,9 @@ function CarouselCard({
               // Sem `preload`: o carrossel fica abaixo da dobra, então estas
               // capas nunca são o LCP — pré-carregá-las só roubava banda da
               // foto do hero, que é. O lazy-load padrão é o certo aqui.
-              className="object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out motion-safe:group-hover:scale-105"
+              // `card-cover` (globals.css): cinza e apagada em repouso, cor no
+              // hover/foco — só em dispositivos com hover; touch fica colorido.
+              className="card-cover object-cover motion-safe:transition-[filter,scale] motion-safe:duration-500 motion-safe:ease-out motion-safe:group-hover:scale-105"
             />
             {/* Scrim INSIDE the shared element so the morph snapshot carries
                 the mask — outside it, the raw cover flies solo during the
@@ -70,7 +73,7 @@ function CarouselCard({
               <span aria-hidden className="mx-1.5 text-foreground/30">
                 /
               </span>
-              {project.device}
+              {platformLabel(project.device)}
             </p>
           </div>
         </div>

@@ -88,19 +88,27 @@ assets em `public/projects/<slug>/`. Não existe registry em TypeScript.
 Campos por projeto (`src/data/types.ts`):
 
 - obrigatórios: `slug`, `name`, `tagline`, `description`, `cover`, `screenshot`,
-  `device` (`"android"` | `"ios"`), `year`, `role`, `features[]`,
-  `architecture.{summary,stack[]}`, `links`
-- opcionais: `links.{github,playStore,appStore,website}`, `extras[]`
+  `device` (`"android"` | `"ios"` | `"web"` | `"fullstack"`), `year`, `role`,
+  `features[]`, `architecture.{summary,stack[]}`, `links`
+- obrigatório em `web`/`fullstack`: `desktopScreenshot` (o build falha sem ele)
+- opcionais: `phone` (`"android"` | `"ios"`, só no `fullstack`; padrão `"ios"`),
+  `links.{github,playStore,appStore,website}`, `extras[]`
+
+`android`/`ios` mostram o smartphone 3D; `web`/`fullstack` mostram um MacBook 3D
+com o celular ao lado. No `web` o celular exibe a versão mobile do site; no
+`fullstack`, o app.
 
 Assets esperados:
 
 | Arquivo | Dimensão | Uso |
 |---------|----------|-----|
 | `cover.webp`  | 1080×1920 (9:16) | card do carrossel e hero do projeto |
-| `screen.webp` | 1080×2340 | textura da tela do smartphone 3D |
+| `screen.webp` | 1080×2340 | textura da tela do smartphone 3D (todos os tipos) |
+| `desktop.webp` | 1600×1000 (16:10) | textura da tela do MacBook 3D (`web`/`fullstack`) |
 
 Arte placeholder pode ser regerada com `node scripts/generate-seed-assets.mjs`
-(macOS — usa `qlmanage`/`sips` para rasterizar os SVGs).
+(macOS — usa `qlmanage`/`sips` para rasterizar os SVGs); passe slugs para gerar
+só alguns projetos. Depois rode `npm run images` (PNG → WebP) e `npm run og`.
 
 ### Blog
 

@@ -29,9 +29,10 @@ function SectionHeading({
 }
 
 // Consistent vertical rhythm + reading column for every content section.
-function Section({ children }: { children: ReactNode }) {
+// `data-rail-index` lets the page-wide ScrollRail track the current section.
+function Section({ index, children }: { index: string; children: ReactNode }) {
   return (
-    <section className="border-t border-foreground/10">
+    <section data-rail-index={index} className="border-t border-foreground/10">
       <div className="mx-auto max-w-4xl px-6 py-24 sm:py-28">{children}</div>
     </section>
   );
@@ -45,7 +46,7 @@ export function AboutSection({
   description: string;
 }) {
   return (
-    <Section>
+    <Section index={index}>
       <SectionHeading index={index} kicker="Overview" title="About the project" />
       <p className="max-w-2xl font-body text-lg leading-relaxed text-muted">
         {description}
@@ -62,7 +63,7 @@ export function FeaturesGrid({
   features: ProjectFeature[];
 }) {
   return (
-    <Section>
+    <Section index={index}>
       <SectionHeading index={index} kicker="Features" title="What it does" />
       <ul className="grid gap-4 sm:grid-cols-2">
         {features.map((feature, i) => (
@@ -94,7 +95,7 @@ export function ArchitectureSection({
   architecture: ProjectArchitecture;
 }) {
   return (
-    <Section>
+    <Section index={index}>
       <SectionHeading
         index={index}
         kicker="Architecture"
@@ -130,7 +131,7 @@ export function ExtraSections({
   if (!extras?.length) return null;
 
   return (
-    <Section>
+    <Section index={index}>
       <SectionHeading index={index} kicker="Details" title="Deep dive" />
       <div className="space-y-12">
         {extras.map((extra, i) => (
@@ -170,7 +171,7 @@ export function LinksRow({
   if (entries.length === 0) return null;
 
   return (
-    <Section>
+    <Section index={index}>
       <SectionHeading index={index} kicker="Links" title="Explore the project" />
       <ul className="flex flex-wrap gap-4">
         {entries.map((entry) => (

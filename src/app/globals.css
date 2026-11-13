@@ -91,6 +91,44 @@ body {
   }
 }
 
+/* Pulsos neon no grid HUD (src/components/ui/hud-grid-pulses.tsx). O traço é
+   um único dash de --dash px que entra pelo início do caminho e sai pelo fim:
+   o gap (--len + --dash) garante que só um dash apareça por vez. Variáveis,
+   duração e atraso vêm inline no <g> de cada pulso. */
+.hud-pulse {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: var(--dash) calc(var(--len) + var(--dash));
+  stroke-dashoffset: var(--dash);
+  animation-name: hud-pulse-travel;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-duration: inherit;
+  animation-delay: inherit;
+}
+.hud-pulse-halo {
+  stroke-width: 6;
+  opacity: 0.18;
+}
+.hud-pulse-core {
+  stroke-width: 1.25;
+  opacity: 0.6;
+}
+.hud-pulses[data-paused] .hud-pulse {
+  animation-play-state: paused;
+}
+
+@keyframes hud-pulse-travel {
+  from {
+    stroke-dashoffset: var(--dash);
+  }
+  to {
+    stroke-dashoffset: calc(-1 * var(--len));
+  }
+}
+
 /* Painel de leitura do blog: vidro escuro sobre a atmosfera HUD. A camada é um
    irmão atrás do conteúdo (não o próprio container) para que a máscara que
    esfuma as bordas não esfume também o texto. */
@@ -274,4 +312,20 @@ body {
 
 .post-body img {
   border: 1px solid #2a2a2a;
+}
+
+/*
+ * Capa dos cards da home: escala de cinza + apagada em repouso, ganha cor no
+ * hover ou no foco por teclado. Só onde existe hover de verdade — em touch não
+ * há como "revelar", então a capa fica sempre colorida. A transição vem das
+ * classes motion-safe do próprio <Image> (instantâneo com reduced motion).
+ */
+@media (hover: hover) {
+  .card-cover {
+    filter: grayscale(1) brightness(0.6);
+  }
+  .group:hover .card-cover,
+  .group:focus-visible .card-cover {
+    filter: grayscale(0) brightness(1);
+  }
 }

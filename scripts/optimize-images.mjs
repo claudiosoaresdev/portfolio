@@ -40,6 +40,14 @@ const RULES = [
     quality: 80,
   },
   {
+    // Logo do header: exibido a 14–16px de altura (~300px de largura) → o
+    // WebP de 1000px (54px de altura) cobre telas 3x. Qualidade alta porque
+    // as bordas retas das letras mostram artefato antes de uma foto.
+    match: (rel) => rel === "images/logo-claudio-soares-dev.png",
+    maxWidth: 1000,
+    quality: 90,
+  },
+  {
     match: (rel) => rel.endsWith("/cover.png"),
     maxWidth: 1080, // hero de projeto é full-bleed (sizes="100vw")
     quality: 74,
@@ -47,6 +55,11 @@ const RULES = [
   {
     match: (rel) => rel.endsWith("/screen.png"),
     maxWidth: 1080, // textura WebGL do device 3D — aguenta zoom
+    quality: 80,
+  },
+  {
+    match: (rel) => rel.endsWith("/desktop.png"),
+    maxWidth: 1600, // textura WebGL da tela do MacBook (16:10) — web/fullstack
     quality: 80,
   },
   {
