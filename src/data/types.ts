@@ -1,6 +1,12 @@
 /** Tipo do projeto: decide a cena 3D da página e o rótulo de plataforma. */
 export type ProjectType = "android" | "ios" | "web" | "fullstack";
 
+/**
+ * Categorias extras, além do tipo: hoje só `backend` (projeto com API/servidor
+ * próprio). Fullstack já conta como backend sem precisar da tag.
+ */
+export type ProjectTag = "backend";
+
 /** Estilo do celular 3D (punch-hole vs dynamic island). */
 export type PhoneKind = "android" | "ios";
 
@@ -53,6 +59,7 @@ export interface Project {
   desktopScreenshot?: string; // "/projects/<slug>/desktop.webp" (16:10) — required for web/fullstack
   device: ProjectType; // which 3D scene renders on its page
   phone?: PhoneKind; // fullstack only: phone style; default "ios"
+  tags?: ProjectTag[]; // extra categories for the home filter (e.g. "backend")
   year: string;
   role: string;
   features: ProjectFeature[]; // >= 1

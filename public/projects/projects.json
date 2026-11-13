@@ -161,6 +161,7 @@
       "cover": "/projects/orbit-tasks/cover.webp",
       "screenshot": "/projects/orbit-tasks/screen.webp",
       "device": "ios",
+      "tags": ["backend"],
       "year": "2026",
       "role": "Full-stack developer",
       "features": [
