@@ -71,7 +71,7 @@ export default async function PostPage({
     <main id="conteudo" className="min-h-svh pt-36 pb-24">
       <JsonLd data={postSchema(post)} />
       <JsonLd data={postBreadcrumbSchema(post)} />
-      <HudBackdrop fixed pulses={false} />
+      <HudBackdrop fixed />
 
       <article className="blur-panel mx-auto max-w-3xl px-6">
         <header className="mb-14 border-b border-foreground/10 pb-10">
