@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 // Pulsos neon que trafegam pelas linhas do grid HUD, como pacotes numa rede:
 // cada pulso sai de uma interseção, anda 1–3 células e vira 90° na próxima,
-// algumas vezes, até sumir. Poucas "faixas" em paralelo, cada uma com uma
+// algumas vezes, até sumir. Cinco "faixas" em paralelo, cada uma com uma
 // pausa aleatória entre um pulso e o próximo.
 //
 // Custo: a animação é CSS (stroke-dashoffset em SVG); o JS só roda ao medir o
@@ -12,8 +12,8 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 // Fora da viewport as animações são pausadas; em `prefers-reduced-motion` o
 // SVG some e nada anima. O CSS fica em globals.css (.hud-pulse).
 
-const LANES = 3;
-const DASH = 56; // comprimento do pulso, px
+const LANES = 5;
+const DASH = 72; // comprimento do pulso, px
 const SPEED = 220; // px/s
 const INNER_MARGIN = 1; // células de folga até a borda (a vinheta as esconde)
 
@@ -101,10 +101,10 @@ export default function HudGridPulses({ cell }: { cell: number }) {
       const prev = sizeRef.current;
       if (prev && prev.cols === size.cols && prev.rows === size.rows) return;
       sizeRef.current = size;
-      // Faixas defasadas: um pulso de cada vez na maior parte do tempo.
+      // Faixas defasadas: dois ou três pulsos na tela ao mesmo tempo.
       setPulses(
         Array.from({ length: LANES }, (_, lane) =>
-          makePulse(size, cell, 0.6 + lane * 1.8 + Math.random() * 1.2),
+          makePulse(size, cell, 0.3 + lane * 0.7 + Math.random() * 0.8),
         ),
       );
     });
@@ -126,7 +126,7 @@ export default function HudGridPulses({ cell }: { cell: number }) {
     if (!size) return;
     setPulses((current) =>
       current.map((pulse, i) =>
-        i === lane ? makePulse(size, cell, 0.8 + Math.random() * 3.2) : pulse,
+        i === lane ? makePulse(size, cell, 0.2 + Math.random() * 1.3) : pulse,
       ),
     );
   };

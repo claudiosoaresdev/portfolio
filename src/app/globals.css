@@ -109,12 +109,12 @@ body {
   animation-delay: inherit;
 }
 .hud-pulse-halo {
-  stroke-width: 5;
-  opacity: 0.16;
+  stroke-width: 6;
+  opacity: 0.3;
 }
 .hud-pulse-core {
-  stroke-width: 1.25;
-  opacity: 0.75;
+  stroke-width: 1.5;
+  opacity: 1;
 }
 .hud-pulses[data-paused] .hud-pulse {
   animation-play-state: paused;
