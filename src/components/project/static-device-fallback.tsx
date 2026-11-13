@@ -75,6 +75,10 @@ function PhoneFrame({
  * the pair is framed against the right 55% column with PAIR_FRAME_LG 7.52×5.6
  * (7.3/7.52 → 97% of 55cqw ≈ 53.35cqw) and centred at 68% of the width; the
  * phone sits centred in that column (72.5%). Keep in sync with device-scene.
+ *
+ * The phone mirrors device-scene's PHONE_FRAME 3.4×5.6 and 34rem cap: body
+ * height 4.6 → min(4.6/5.6 = 82.14cqh, 34rem, 4.6/3.4 = 135.3% of the framing
+ * width — 100cqw, or the 55cqw column from lg in `layer` mode → 74.4cqw).
  */
 export default function StaticDeviceFallback({
   spec,
@@ -87,18 +91,16 @@ export default function StaticDeviceFallback({
 }) {
   if (!hasDesktop(spec.kind) || !spec.desktopScreenshot) {
     return (
-      <div
-        className={`flex h-full w-full items-center justify-center ${
-          layer ? "[container-type:size]" : ""
-        }`}
-      >
+      <div className="flex h-full w-full items-center justify-center [container-type:size]">
         <PhoneFrame
           phone={spec.phone}
           screenshot={spec.screenshot}
           alt={alt}
           sizes="20rem"
-          className={`relative h-full max-h-[34rem] ${
-            layer ? "lg:translate-x-[22.5cqw]" : ""
+          className={`relative h-[min(82.14cqh,34rem,135.3cqw)] ${
+            layer
+              ? "lg:h-[min(82.14cqh,34rem,74.4cqw)] lg:translate-x-[22.5cqw]"
+              : ""
           }`}
         />
       </div>

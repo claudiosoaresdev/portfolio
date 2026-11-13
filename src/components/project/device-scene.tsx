@@ -39,6 +39,13 @@ const LG_COLUMN = 0.55;
 const PAIR_CENTER_X_LG = 0.68;
 // The phone-only scene keeps its old spot: the centre of the right 55% column.
 const PHONE_CENTER_X_LG = 0.725;
+// Phone-only framing, same idea as the pair: the 2.2×4.6 body plus its swing
+// (POS_Y ±0.35, ROT_Y ±0.55) fits a 3.4×5.6 box, and the phone never grows
+// past 34rem tall — the static fallback's cap. Keep in sync with
+// static-device-fallback.tsx (phone height = min(4.6/5.6 cqh, 34rem, …)).
+const PHONE_FRAME = { w: 3.4, h: 5.6 };
+const PHONE_BODY_H = 4.6;
+const PHONE_MAX_PX = 34 * 16;
 const PHONE_CAMERA_Z = 6.2;
 const FOV = 35;
 
@@ -73,8 +80,8 @@ function DeviceRig({
     const g = group.current;
     if (!g) return;
 
-    // Framing: the phone keeps its fixed camera; the pair backs the camera off
-    // until its bounding box fits both the canvas height and the framing width.
+    // Framing: the camera backs off until the device's bounding box fits both
+    // the canvas height and the framing width.
     // From lg the canvas spans the whole viewport, so the framing width is the
     // right-hand column and a view offset slides the devices off-centre (the
     // projection stays on-axis, so they look exactly as in a narrower canvas).
@@ -83,10 +90,13 @@ function DeviceRig({
     const tan = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
     const frameWidth = lg ? width * LG_COLUMN : width;
     const aspect = frameWidth / Math.max(height, 1);
-    const frame = lg ? PAIR_FRAME_LG : PAIR_FRAME;
-    const z = pair
-      ? Math.max(frame.h / 2 / tan, frame.w / 2 / (tan * aspect))
-      : PHONE_CAMERA_Z;
+    const frame = pair ? (lg ? PAIR_FRAME_LG : PAIR_FRAME) : PHONE_FRAME;
+    let z = Math.max(frame.h / 2 / tan, frame.w / 2 / (tan * aspect));
+    // Cap the phone's on-screen height (visible height = PHONE_BODY_H at most
+    // PHONE_MAX_PX of the canvas height).
+    if (!pair) {
+      z = Math.max(z, (PHONE_BODY_H * height) / PHONE_MAX_PX / 2 / tan);
+    }
     const cam = camera as THREE.PerspectiveCamera;
     const offsetX = lg
       ? width / 2 - width * (pair ? PAIR_CENTER_X_LG : PHONE_CENTER_X_LG)
