@@ -12,6 +12,7 @@ feature_atual: none
 
 ## Technical decisions
 
+- **2026-11-13** — `[project-filter]` Chips de filtro na home (All/Android/iOS/Mobile/Web/Backend/Fullstack), seleção única, `?type=` na URL lido via `useSyncExternalStore` (snapshot de servidor = all; `useSearchParams` exigiria Suspense e tiraria o carrossel do HTML estático). Backend = fullstack ou `tags: ["backend"]` no JSON (novo campo opcional, validado no loader). Carrossel remonta por `key` a cada filtro (o ResizeObserver do track não percebe cards a menos). Lição: rAF não roda no Browser pane oculto — verificar carrossel via Playwright.
 - **2026-11-13** — `[device-polish]` Luz dos modelos 3D = `Environment frames={1}` com Lightformers (sem HDR) + `scene.environmentRotation` amortecido seguindo o ponteiro (só `hover: hover` e sem reduced motion; invalida só enquanto converge). Lição: metal (`metalness` alto) tinge o reflexo com a cor-base — base `#101014` = carcaça preta sem reflexo; usar grafite `#4a4e57`. Superfícies planas de frente (tampo do teclado) refletem o "teto": precisa de Lightformer overhead.
 
 - **2026-11-13** — `[web-showcase]` Tipos `web`/`fullstack` (`device` ampliado + `desktopScreenshot` + `phone`). MacBook 3D procedural (RoundedBox, sem GLTF) na mesma cena do celular, com enquadramento de câmera por aspect em `useFrame`; abaixo de `lg` o par ocupa os 55% de cima e o texto fica embaixo. Rejeitados: GLTF (peso + clash com celular estilizado), mockup 2.5D CSS (não gira). Spec/plano em `docs/superpowers/`. Demos em commit próprio (`chore(projects): projetos demo…`).

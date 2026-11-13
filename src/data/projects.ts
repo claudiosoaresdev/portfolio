@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import type { Project } from "./types";
-import { PROJECT_TYPES, hasDesktop } from "./platform";
+import { PROJECT_TAGS, PROJECT_TYPES, hasDesktop } from "./platform";
 
 // Content source of truth: public/projects/projects.json. Editing that file
 // (adding/removing entries) is the only step needed to change the portfolio —
@@ -28,6 +28,12 @@ export function getProjects(): Project[] {
     if (!PROJECT_TYPES.includes(project.device)) {
       throw new Error(
         `Invalid ${JSON_PATH}: project "${project.slug}" has unknown device "${project.device}" (expected ${PROJECT_TYPES.join(" | ")})`,
+      );
+    }
+    const badTag = project.tags?.find((tag) => !PROJECT_TAGS.includes(tag));
+    if (badTag) {
+      throw new Error(
+        `Invalid ${JSON_PATH}: project "${project.slug}" has unknown tag "${badTag}" (expected ${PROJECT_TAGS.join(" | ")})`,
       );
     }
     if (hasDesktop(project.device) && !project.desktopScreenshot) {
