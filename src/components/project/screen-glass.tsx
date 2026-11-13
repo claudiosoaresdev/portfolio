@@ -1,7 +1,10 @@
+import * as THREE from "three";
+
 /**
- * Thin glossy layer over a screen: catches a faint reflection of the studio
- * lights without washing out the screenshot below (low opacity, no depth write
- * so it never hides the unlit screen plane).
+ * Thin glossy layer over a screen. Black base + additive blending means it only
+ * ADDS the specular/clearcoat reflection of the studio lights — it never dims
+ * or veils the true-color screenshot below. No depth write so it never hides
+ * the unlit screen plane.
  */
 export default function ScreenGlass({
   width,
@@ -16,9 +19,10 @@ export default function ScreenGlass({
     <mesh position={position}>
       <planeGeometry args={[width, height]} />
       <meshPhysicalMaterial
-        color="#ffffff"
+        color="#000000"
         transparent
-        opacity={0.1}
+        opacity={0.35}
+        blending={THREE.AdditiveBlending}
         metalness={0}
         roughness={0.05}
         clearcoat={1}

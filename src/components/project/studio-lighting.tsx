@@ -22,6 +22,63 @@ function subscribeHover(onChange: () => void) {
 }
 const getHover = () => window.matchMedia(HOVER_QUERY).matches;
 
+// Hoisted so the Environment's `children` keep the same reference across
+// renders: drei re-bakes the cube and resets `environmentRotation` whenever
+// its children change, which made the highlights snap back to center when the
+// scene re-rendered (e.g. on sceneReady).
+const STUDIO = (
+  <>
+      {/* Ceiling softbox: what flat tops (keyboard deck, phone sides) mirror */}
+      <Lightformer
+        form="rect"
+        intensity={0.8}
+        color={KEY_LIGHT}
+        position={[0, 7, 0]}
+        scale={[14, 10, 1]}
+      />
+      {/* Back-top strip: catches the deck and lid edges at grazing angles */}
+      <Lightformer
+        form="rect"
+        intensity={1.4}
+        color={KEY_LIGHT}
+        position={[0, 4, -7]}
+        scale={[12, 1.2, 1]}
+      />
+      {/* Soft key: big rect above-front-right */}
+      <Lightformer
+        form="rect"
+        intensity={2}
+        color={KEY_LIGHT}
+        position={[3, 4, 5]}
+        scale={[8, 5, 1]}
+      />
+      {/* White rim strip, left */}
+      <Lightformer
+        form="rect"
+        intensity={1.6}
+        color={KEY_LIGHT}
+        position={[-6, 1, 1]}
+        scale={[0.6, 8, 1]}
+      />
+      {/* Lime brand rim, right-back */}
+      <Lightformer
+        form="rect"
+        intensity={1.5}
+        color={LIME}
+        position={[6, 0, -2]}
+        scale={[0.5, 7, 1]}
+      />
+      {/* Indigo fill from below-left */}
+      <Lightformer
+        form="circle"
+        intensity={0.8}
+        color={INDIGO}
+        position={[-3, -4, 3]}
+        scale={5}
+      />
+  </>
+);
+
 /**
  * Code-built light studio. Metals only show what they reflect, so the bodies
  * need an environment: a few Lightformers (soft white key, white + lime rim
@@ -47,6 +104,8 @@ export default function StudioLighting() {
       return;
     }
     const onMove = (e: PointerEvent) => {
+      // Touch drags on hybrid (hover-capable) devices are scrolls, not aiming.
+      if (e.pointerType === "touch") return;
       // Normalized −1..1 across the viewport (the canvas sits under text).
       target.current = {
         x: (e.clientX / window.innerWidth) * 2 - 1,
@@ -58,7 +117,10 @@ export default function StudioLighting() {
     return () => window.removeEventListener("pointermove", onMove);
   }, [reactive, invalidate]);
 
-  useFrame(({ scene }, delta) => {
+  useFrame(({ scene }, rawDelta) => {
+    // With frameloop="demand" the first delta after idle spans the whole idle
+    // time; clamp it so returning to the canvas eases instead of snapping.
+    const delta = Math.min(rawDelta, 1 / 30);
     const rot = scene.environmentRotation;
     const ty = target.current.x * SWING;
     const tx = target.current.y * SWING * 0.5;
@@ -77,54 +139,7 @@ export default function StudioLighting() {
       <directionalLight position={[4, 5, 5]} intensity={0.6} color={KEY_LIGHT} />
 
       <Environment frames={1} resolution={256}>
-        {/* Ceiling softbox: what flat tops (keyboard deck, phone sides) mirror */}
-        <Lightformer
-          form="rect"
-          intensity={0.8}
-          color={KEY_LIGHT}
-          position={[0, 7, 0]}
-          scale={[14, 10, 1]}
-        />
-        {/* Back-top strip: catches the deck and lid edges at grazing angles */}
-        <Lightformer
-          form="rect"
-          intensity={1.4}
-          color={KEY_LIGHT}
-          position={[0, 4, -7]}
-          scale={[12, 1.2, 1]}
-        />
-        {/* Soft key: big rect above-front-right */}
-        <Lightformer
-          form="rect"
-          intensity={2}
-          color={KEY_LIGHT}
-          position={[3, 4, 5]}
-          scale={[8, 5, 1]}
-        />
-        {/* White rim strip, left */}
-        <Lightformer
-          form="rect"
-          intensity={1.6}
-          color={KEY_LIGHT}
-          position={[-6, 1, 1]}
-          scale={[0.6, 8, 1]}
-        />
-        {/* Lime brand rim, right-back */}
-        <Lightformer
-          form="rect"
-          intensity={1.5}
-          color={LIME}
-          position={[6, 0, -2]}
-          scale={[0.5, 7, 1]}
-        />
-        {/* Indigo fill from below-left */}
-        <Lightformer
-          form="circle"
-          intensity={0.8}
-          color={INDIGO}
-          position={[-3, -4, 3]}
-          scale={5}
-        />
+        {STUDIO}
       </Environment>
     </>
   );

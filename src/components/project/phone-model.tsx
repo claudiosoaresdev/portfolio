@@ -20,8 +20,11 @@ import ScreenGlass from "./screen-glass";
 const BODY = { w: 2.2, h: 4.6, d: 0.28 };
 const SCREEN = { w: 2.02, h: 4.38 };
 const FRONT = BODY.d / 2;
-const BACK = -BODY.d / 2;
 const SIDE = BODY.w / 2;
+
+// drei's RoundedBox extrudes depth − 2·radius: a radius ≥ depth/2 inverts the
+// side walls (culled, self-intersecting, wrong thickness). Clamp every radius.
+const fitRadius = (r: number, depth: number) => Math.min(r, depth / 2 - 0.005);
 
 function Metal({ light = false }: { light?: boolean }) {
   return (
@@ -35,31 +38,10 @@ function Metal({ light = false }: { light?: boolean }) {
   );
 }
 
-/** Rear lens: metal ring + dark glass element. */
-function Lens({ position, r = 0.13 }: { position: [number, number, number]; r?: number }) {
-  return (
-    <group position={position} rotation={[Math.PI / 2, 0, 0]}>
-      <mesh>
-        <cylinderGeometry args={[r, r, 0.05, 32]} />
-        <Metal light />
-      </mesh>
-      <mesh position={[0, -0.026, 0]}>
-        <cylinderGeometry args={[r * 0.72, r * 0.72, 0.01, 32]} />
-        <meshPhysicalMaterial
-          color={CUTOUT_COLOR}
-          metalness={0}
-          roughness={0.05}
-          clearcoat={1}
-        />
-      </mesh>
-    </group>
-  );
-}
-
 /**
  * Procedural phone: graphite shell with a lighter metal frame band, side
- * buttons, rear camera module (iOS: square, 3 lenses; Android: bar), glossy
- * black bezel, true-color screen under a thin glass layer, lime edge accent.
+ * buttons, glossy black bezel, true-color screen under a thin glass layer,
+ * lime edge accent. (No rear camera: the back never faces the camera.)
  */
 export default function PhoneModel({
   device,
@@ -93,14 +75,14 @@ export default function PhoneModel({
   return (
     <group>
       {/* Shell */}
-      <RoundedBox args={[BODY.w, BODY.h, BODY.d]} radius={bodyRadius} smoothness={8} bevelSegments={4}>
+      <RoundedBox args={[BODY.w, BODY.h, BODY.d]} radius={fitRadius(bodyRadius, BODY.d)} smoothness={8} bevelSegments={4}>
         <Metal />
       </RoundedBox>
 
       {/* Frame band — a lighter metal stripe around the edges */}
       <RoundedBox
         args={[BODY.w + 0.03, BODY.h + 0.03, BODY.d * 0.5]}
-        radius={bodyRadius}
+        radius={fitRadius(bodyRadius, BODY.d * 0.5)}
         smoothness={8}
         bevelSegments={4}
       >
@@ -122,27 +104,6 @@ export default function PhoneModel({
         <boxGeometry args={[0.012, 2.2, 0.05]} />
         <meshBasicMaterial color={LIME} toneMapped={false} />
       </mesh>
-
-      {/* Rear camera module */}
-      {isIos ? (
-        <group position={[-0.5, 1.6, BACK - 0.03]}>
-          <RoundedBox args={[0.86, 0.86, 0.06]} radius={0.16} smoothness={6}>
-            <meshPhysicalMaterial color={BEZEL_COLOR} metalness={0.2} roughness={0.2} clearcoat={1} />
-          </RoundedBox>
-          <Lens position={[-0.18, 0.18, -0.04]} />
-          <Lens position={[-0.18, -0.18, -0.04]} />
-          <Lens position={[0.2, 0, -0.04]} />
-        </group>
-      ) : (
-        <group position={[0, 1.6, BACK - 0.03]}>
-          <RoundedBox args={[1.9, 0.48, 0.06]} radius={0.12} smoothness={6}>
-            <meshPhysicalMaterial color={BEZEL_COLOR} metalness={0.2} roughness={0.2} clearcoat={1} />
-          </RoundedBox>
-          <Lens position={[-0.55, 0, -0.04]} />
-          <Lens position={[-0.18, 0, -0.04]} />
-          <Lens position={[0.2, 0, -0.04]} r={0.08} />
-        </group>
-      )}
 
       {/* Glossy black bezel */}
       <mesh position={[0, 0, FRONT]}>
