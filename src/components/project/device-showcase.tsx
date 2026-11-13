@@ -133,7 +133,10 @@ export default function DeviceShowcase({ project }: { project: Project }) {
   );
 
   const spec = deviceSpec(project);
-  const alt = hasDesktop(project.device)
+  // web/fullstack: MacBook + phone. Below lg the pair is ~3x wider than a phone,
+  // so it gets its own box (top ~55%) with the copy below, not under a scrim.
+  const pair = hasDesktop(project.device);
+  const alt = pair
     ? `${project.name} desktop and mobile screenshots`
     : `${project.name} app screenshot`;
 
@@ -151,7 +154,9 @@ export default function DeviceShowcase({ project }: { project: Project }) {
             <PlatformPhase project={project} />
             <HighlightPhase project={project} />
           </div>
-          <div className="order-1 h-[28rem] lg:order-2">
+          <div
+            className={`order-1 lg:order-2 ${pair ? "aspect-[16/11] w-full" : "h-[28rem]"}`}
+          >
             <StaticDeviceFallback
               spec={spec}
               alt={alt}
@@ -188,7 +193,11 @@ export default function DeviceShowcase({ project }: { project: Project }) {
         </div>
 
         {/* Canvas — full-bleed behind content on mobile, right 55% column on lg. */}
-        <div className="absolute inset-0 z-0 lg:left-[45%]">
+        <div
+          className={`absolute z-0 lg:inset-y-0 lg:left-[45%] lg:right-0 lg:h-auto ${
+            pair ? "inset-x-0 top-0 h-[55%]" : "inset-0"
+          }`}
+        >
           <div className="h-full w-full">
             {canvasInView ? (
               <DeviceCanvas
@@ -207,27 +216,34 @@ export default function DeviceShowcase({ project }: { project: Project }) {
           </div>
         </div>
 
-        {/* Scrim keeps the overlaid phases legible over the canvas on mobile only. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-2/3 bg-gradient-to-t from-background via-background/70 to-transparent lg:hidden" />
+        {/* Scrim keeps the overlaid phases legible over the canvas on mobile only
+            (the pair layout never overlaps copy and devices, so it needs none). */}
+        {!pair && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-2/3 bg-gradient-to-t from-background via-background/70 to-transparent lg:hidden" />
+        )}
 
         {/* Content phases — bottom overlay on mobile, left 45% column on lg. */}
-        <div className="absolute inset-x-0 bottom-0 z-20 px-6 pb-16 pl-16 sm:pl-20 lg:inset-y-0 lg:right-auto lg:flex lg:w-[45%] lg:items-center lg:pb-0">
+        <div
+          className={`absolute inset-x-0 bottom-0 z-20 px-6 pb-16 pl-16 sm:pl-20 lg:inset-y-0 lg:right-auto lg:flex lg:w-[45%] lg:items-center lg:pb-0 ${
+            pair ? "top-[55%] pt-4" : ""
+          }`}
+        >
           <div className="relative h-64 w-full max-w-md">
             <motion.div
               style={{ opacity: appOpacity, y: appY }}
-              className="pointer-events-none absolute inset-0 flex flex-col justify-end lg:justify-center"
+              className={`pointer-events-none absolute inset-0 flex flex-col lg:justify-center ${pair ? "justify-start" : "justify-end"}`}
             >
               <AppPhase project={project} />
             </motion.div>
             <motion.div
               style={{ opacity: platformOpacity, y: platformY }}
-              className="pointer-events-none absolute inset-0 flex flex-col justify-end lg:justify-center"
+              className={`pointer-events-none absolute inset-0 flex flex-col lg:justify-center ${pair ? "justify-start" : "justify-end"}`}
             >
               <PlatformPhase project={project} />
             </motion.div>
             <motion.div
               style={{ opacity: highlightOpacity, y: highlightY }}
-              className="pointer-events-none absolute inset-0 flex flex-col justify-end lg:justify-center"
+              className={`pointer-events-none absolute inset-0 flex flex-col lg:justify-center ${pair ? "justify-start" : "justify-end"}`}
             >
               <HighlightPhase project={project} />
             </motion.div>

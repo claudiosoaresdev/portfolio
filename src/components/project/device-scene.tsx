@@ -32,7 +32,7 @@ const PAIR_ROT_X = [0.05, -0.05] as const;
 const PAIR_ROT_Z = [0.02, -0.02] as const;
 const PAIR_POS_Y = [0.2, -0.2] as const;
 // Pair bounding box (scene units, incl. swing margin) used to frame the camera.
-const PAIR_FRAME = { w: 8.4, h: 5.6 };
+const PAIR_FRAME = { w: 9.4, h: 5.6 };
 const PHONE_CAMERA_Z = 6.2;
 const FOV = 35;
 
