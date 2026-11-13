@@ -213,6 +213,85 @@
           "body": "SwiftData holds a full local mirror of tasks and schedule, which means capture and planning work with no connection at all. A background reconciler replays queued mutations when connectivity returns and resolves ordering with server timestamps, keeping the offline experience indistinguishable from the online one."
         }
       ]
+    },
+    {
+      "slug": "lumen-commerce",
+      "name": "Lumen Commerce",
+      "tagline": "A headless storefront that loads before you blink.",
+      "description": "Lumen Commerce is a storefront for a modular-lamp brand, built as a statically rendered Next.js site over a headless commerce API. Product pages are pre-rendered and revalidated on stock changes, so browsing never waits on the backend.",
+      "cover": "/projects/lumen-commerce/cover.webp",
+      "screenshot": "/projects/lumen-commerce/screen.webp",
+      "desktopScreenshot": "/projects/lumen-commerce/desktop.webp",
+      "device": "web",
+      "year": "2026",
+      "role": "Solo developer",
+      "features": [
+        {
+          "title": "Instant product pages",
+          "description": "Every product page is pre-rendered at build time and revalidated on stock webhooks, so the catalog is served straight from the edge."
+        },
+        {
+          "title": "Responsive by default",
+          "description": "One layout system scales from a 375px phone to a 4K monitor without separate mobile templates."
+        },
+        {
+          "title": "Cart that survives",
+          "description": "The cart lives in the URL and local storage, so it survives reloads, devices and abandoned sessions."
+        }
+      ],
+      "architecture": {
+        "summary": "Next.js App Router with static generation over a headless commerce API. Server components fetch catalog data at build time; client components handle only cart and checkout.",
+        "stack": [
+          "Next.js",
+          "TypeScript",
+          "Tailwind CSS",
+          "Stripe",
+          "Vercel"
+        ]
+      },
+      "links": {
+        "website": "https://example.com"
+      }
+    },
+    {
+      "slug": "pulse-health",
+      "name": "Pulse Care",
+      "tagline": "Patient monitoring on the phone, care coordination on the web.",
+      "description": "Pulse Care pairs an Android app that collects vitals and medication check-ins with a web dashboard where clinicians triage who needs attention. Both clients share one Node API and a typed contract, so a change ships to the app and the dashboard together.",
+      "cover": "/projects/pulse-health/cover.webp",
+      "screenshot": "/projects/pulse-health/screen.webp",
+      "desktopScreenshot": "/projects/pulse-health/desktop.webp",
+      "device": "fullstack",
+      "phone": "android",
+      "year": "2026",
+      "role": "Solo developer",
+      "features": [
+        {
+          "title": "Vitals at a glance",
+          "description": "Heart rate, sleep and steps sync from wearables into a single daily view on the phone."
+        },
+        {
+          "title": "Clinician triage",
+          "description": "The web dashboard ranks patients by risk signals so the care team sees who needs a call first."
+        },
+        {
+          "title": "One contract, two clients",
+          "description": "A shared OpenAPI schema generates the Kotlin and TypeScript clients, so the app and the dashboard never drift."
+        }
+      ],
+      "architecture": {
+        "summary": "Kotlin + Jetpack Compose app and a Next.js dashboard over a Node/NestJS API with PostgreSQL. A shared OpenAPI contract generates both clients.",
+        "stack": [
+          "Kotlin",
+          "Jetpack Compose",
+          "Next.js",
+          "NestJS",
+          "PostgreSQL"
+        ]
+      },
+      "links": {
+        "website": "https://example.com"
+      }
     }
   ]
 }
