@@ -4,7 +4,7 @@ import { Component, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
 import type { MotionValue } from "motion/react";
-import type { PhoneKind } from "@/data/types";
+import type { DeviceSpec } from "@/data/types";
 import StaticDeviceFallback from "./static-device-fallback";
 
 const DeviceScene = dynamic(() => import("./device-scene"), { ssr: false });
@@ -53,13 +53,11 @@ function useWebGLSupported(): boolean | null {
 }
 
 export default function DeviceCanvas({
-  device,
-  screenshot,
+  spec,
   progress,
   alt,
 }: {
-  device: PhoneKind;
-  screenshot: string;
+  spec: DeviceSpec;
   progress: MotionValue<number>;
   alt: string;
 }) {
@@ -82,11 +80,7 @@ export default function DeviceCanvas({
           revealScene ? "opacity-0" : "opacity-100"
         }`}
       >
-        <StaticDeviceFallback
-          device={device}
-          screenshot={screenshot}
-          alt={alt}
-        />
+        <StaticDeviceFallback spec={spec} alt={alt} />
       </div>
 
       {showScene && (
@@ -97,8 +91,7 @@ export default function DeviceCanvas({
         >
           <SceneErrorBoundary onError={() => setSceneFailed(true)}>
             <DeviceScene
-              device={device}
-              screenshot={screenshot}
+              spec={spec}
               progress={progress}
               alt={alt}
               onReady={() => setSceneReady(true)}

@@ -6,26 +6,35 @@ import { ContactShadows, RoundedBox, useTexture } from "@react-three/drei";
 import { assetPath } from "@/lib/site";
 import * as THREE from "three";
 import type { MotionValue } from "motion/react";
-import type { PhoneKind } from "@/data/types";
+import type { DeviceSpec, PhoneKind } from "@/data/types";
+import { hasDesktop } from "@/data/platform";
 import StaticDeviceFallback from "./static-device-fallback";
 
-// Three.js material/light colors are not CSS, so the design tokens are mirrored
-// here as literals. Keep in sync with globals.css @theme:
-//   --color-primary   (lime)   #A9FE00
-//   --color-secondary (indigo) #4E47E3
-//   --color-background         #0A0A0A
-const LIME = "#A9FE00"; // --color-primary — rim light + accent edge strip
-const INDIGO = "#4E47E3"; // --color-secondary — atmospheric fill light
-const KEY_LIGHT = "#FFFFFF"; // neutral key light
-const BODY_COLOR = "#101014"; // chassis, a touch deeper than --color-background
-const BEZEL_COLOR = "#050506"; // screen surround, darkest
-const CUTOUT_COLOR = "#000000"; // camera punch-hole / dynamic island
+import {
+  BEZEL_COLOR,
+  BODY_COLOR,
+  CUTOUT_COLOR,
+  INDIGO,
+  KEY_LIGHT,
+  LIME,
+} from "./device-materials";
+import LaptopModel from "./laptop-model";
 
 // Scroll-driven pose extremes, interpolated by `progress` in [0, 1].
 const ROT_Y = [-0.55, 0.55] as const;
 const ROT_X = [0.08, -0.08] as const;
 const ROT_Z = [0.05, -0.05] as const;
 const POS_Y = [0.35, -0.35] as const;
+
+// MacBook + phone pair: wider object, so a calmer swing keeps it in frame.
+const PAIR_ROT_Y = [-0.32, 0.32] as const;
+const PAIR_ROT_X = [0.05, -0.05] as const;
+const PAIR_ROT_Z = [0.02, -0.02] as const;
+const PAIR_POS_Y = [0.2, -0.2] as const;
+// Pair bounding box (scene units, incl. swing margin) used to frame the camera.
+const PAIR_FRAME = { w: 8.4, h: 5.6 };
+const PHONE_CAMERA_Z = 6.2;
+const FOV = 35;
 
 function PhoneModel({
   device,
@@ -110,50 +119,99 @@ function PhoneModel({
   );
 }
 
+/** Calls `onReady` once every texture in the scene has loaded. */
+function useAllReady(count: number, onReady?: () => void) {
+  const loaded = useRef(0);
+  return useCallback(() => {
+    loaded.current += 1;
+    if (loaded.current === count) onReady?.();
+  }, [count, onReady]);
+}
+
 function DeviceRig({
-  device,
-  screenshot,
+  spec,
   progress,
   onReady,
 }: {
-  device: PhoneKind;
-  screenshot: string;
+  spec: DeviceSpec;
   progress: MotionValue<number>;
   onReady?: () => void;
 }) {
   const group = useRef<THREE.Group>(null);
   const invalidate = useThree((state) => state.invalidate);
+  const pair = hasDesktop(spec.kind) && !!spec.desktopScreenshot;
+  const textureReady = useAllReady(pair ? 2 : 1, onReady);
 
   // frameloop="demand" only renders on invalidate — repaint whenever scroll
   // progress changes. `.on` returns its own unsubscribe.
   useEffect(() => progress.on("change", invalidate), [progress, invalidate]);
 
-  useFrame(() => {
+  useFrame(({ camera, size }) => {
     const g = group.current;
     if (!g) return;
+
+    // Framing: the phone keeps its fixed camera; the pair backs the camera off
+    // until its bounding box fits both the canvas height and width.
+    const tan = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
+    const aspect = size.width / Math.max(size.height, 1);
+    const z = pair
+      ? Math.max(PAIR_FRAME.h / 2 / tan, PAIR_FRAME.w / 2 / (tan * aspect))
+      : PHONE_CAMERA_Z;
+    if (camera.position.z !== z) {
+      camera.position.z = z;
+      camera.updateProjectionMatrix();
+    }
+
     const p = progress.get();
-    g.rotation.y = THREE.MathUtils.lerp(ROT_Y[0], ROT_Y[1], p);
-    g.rotation.x = THREE.MathUtils.lerp(ROT_X[0], ROT_X[1], p);
-    g.rotation.z = THREE.MathUtils.lerp(ROT_Z[0], ROT_Z[1], p);
-    g.position.y = THREE.MathUtils.lerp(POS_Y[0], POS_Y[1], p);
+    const [ry, rx, rz, py] = pair
+      ? [PAIR_ROT_Y, PAIR_ROT_X, PAIR_ROT_Z, PAIR_POS_Y]
+      : [ROT_Y, ROT_X, ROT_Z, POS_Y];
+    g.rotation.y = THREE.MathUtils.lerp(ry[0], ry[1], p);
+    g.rotation.x = THREE.MathUtils.lerp(rx[0], rx[1], p);
+    g.rotation.z = THREE.MathUtils.lerp(rz[0], rz[1], p);
+    g.position.y = THREE.MathUtils.lerp(py[0], py[1], p);
   });
+
+  if (!pair) {
+    return (
+      <group ref={group}>
+        <PhoneModel
+          device={spec.phone}
+          screenshot={spec.screenshot}
+          onReady={textureReady}
+        />
+      </group>
+    );
+  }
 
   return (
     <group ref={group}>
-      <PhoneModel device={device} screenshot={screenshot} onReady={onReady} />
+      {/* Laptop left of center, tipped toward the camera so the deck reads. */}
+      <group position={[-0.8, 0.1, 0]} rotation={[0.28, 0, 0]}>
+        <LaptopModel
+          screenshot={spec.desktopScreenshot!}
+          onReady={textureReady}
+        />
+      </group>
+      {/* Phone front-right, overlapping the laptop's right edge. */}
+      <group position={[2.75, -0.75, 1.6]} rotation={[0, -0.18, 0]} scale={0.72}>
+        <PhoneModel
+          device={spec.phone}
+          screenshot={spec.screenshot}
+          onReady={textureReady}
+        />
+      </group>
     </group>
   );
 }
 
 export default function DeviceScene({
-  device,
-  screenshot,
+  spec,
   progress,
   alt,
   onReady,
 }: {
-  device: PhoneKind;
-  screenshot: string;
+  spec: DeviceSpec;
   progress: MotionValue<number>;
   alt: string;
   onReady?: () => void;
@@ -163,9 +221,9 @@ export default function DeviceScene({
       frameloop="demand"
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-      camera={{ position: [0, 0, 6.2], fov: 35 }}
+      camera={{ position: [0, 0, PHONE_CAMERA_Z], fov: FOV }}
       fallback={
-        <StaticDeviceFallback device={device} screenshot={screenshot} alt={alt} />
+        <StaticDeviceFallback spec={spec} alt={alt} />
       }
     >
       <ambientLight intensity={0.5} />
@@ -175,8 +233,7 @@ export default function DeviceScene({
 
       <Suspense fallback={null}>
         <DeviceRig
-          device={device}
-          screenshot={screenshot}
+          spec={spec}
           progress={progress}
           onReady={onReady}
         />
@@ -185,7 +242,7 @@ export default function DeviceScene({
       <ContactShadows
         position={[0, -2.6, 0]}
         opacity={0.4}
-        scale={8}
+        scale={hasDesktop(spec.kind) ? 14 : 8}
         blur={2.5}
         far={4}
         frames={1}

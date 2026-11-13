@@ -12,7 +12,7 @@ import {
 } from "motion/react";
 
 import type { Project } from "@/data/types";
-import { deviceSpec, platformLabel } from "@/data/platform";
+import { deviceSpec, hasDesktop, platformLabel } from "@/data/platform";
 import DeviceCanvas from "./device-canvas";
 import StaticDeviceFallback from "./static-device-fallback";
 
@@ -132,7 +132,10 @@ export default function DeviceShowcase({ project }: { project: Project }) {
     [24, 24, 0, 0],
   );
 
-  const alt = `${project.name} app screenshot`;
+  const spec = deviceSpec(project);
+  const alt = hasDesktop(project.device)
+    ? `${project.name} desktop and mobile screenshots`
+    : `${project.name} app screenshot`;
 
   // Reduced motion (REQ-018): no scroll binding, no sticky pin — a flat two-column
   // layout with the static phone and all three phases stacked in reading order.
@@ -150,8 +153,7 @@ export default function DeviceShowcase({ project }: { project: Project }) {
           </div>
           <div className="order-1 h-[28rem] lg:order-2">
             <StaticDeviceFallback
-              device={deviceSpec(project).phone}
-              screenshot={project.screenshot}
+              spec={spec}
               alt={alt}
             />
           </div>
@@ -190,8 +192,7 @@ export default function DeviceShowcase({ project }: { project: Project }) {
           <div className="h-full w-full">
             {canvasInView ? (
               <DeviceCanvas
-                device={deviceSpec(project).phone}
-                screenshot={project.screenshot}
+                spec={spec}
                 progress={progress}
                 alt={alt}
               />
@@ -199,8 +200,7 @@ export default function DeviceShowcase({ project }: { project: Project }) {
               /* Same box the frame occupies inside DeviceCanvas, so the
                  deferred mount swap doesn't shift or resize the phone. */
               <StaticDeviceFallback
-                device={deviceSpec(project).phone}
-                screenshot={project.screenshot}
+                spec={spec}
                 alt={alt}
               />
             )}
