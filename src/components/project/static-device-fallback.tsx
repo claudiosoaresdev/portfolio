@@ -66,9 +66,10 @@ function PhoneFrame({
  * reduced-motion static frame.
  *
  * Phone-only types render a single phone; web/fullstack render a MacBook with
- * the phone overlapping its bottom-right corner, laid out in a 16:11 box that
- * always fits the container (container-query units) so the static → 3D fade
- * never jumps.
+ * the phone overlapping its bottom-right corner, laid out in a 16:11 box sized
+ * by the same rule as the 3D camera framing (pair ≈ 7.3×5.0 units inside
+ * device-scene's PAIR_FRAME 9.4×5.6 → 78% of width / 89% of height), so the
+ * static → 3D fade never resizes the pair. Keep in sync with PAIR_FRAME.
  */
 export default function StaticDeviceFallback({
   spec,
@@ -93,7 +94,7 @@ export default function StaticDeviceFallback({
 
   return (
     <div className="flex h-full w-full items-center justify-center [container-type:size]">
-      <div className="relative aspect-[16/11] w-[min(92cqw,48rem,calc(92cqh*16/11))]">
+      <div className="relative aspect-[16/11] w-[min(78cqw,calc(89cqh*16/11))]">
         {/* MacBook — lid (16:10 screen in a bezel) + thin base */}
         <div className="absolute left-0 top-0 w-[82%]">
           <div className="rounded-[0.9rem] border border-foreground/15 bg-background p-[2.2%] shadow-[0_0_60px_-18px_var(--color-primary)]">
