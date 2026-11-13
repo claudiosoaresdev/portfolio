@@ -12,14 +12,14 @@ import {
 
 // Idioma escolhido pelo visitante, guardado no localStorage. Store externa
 // (não useState+effect): vários componentes leem o mesmo valor e o snapshot de
-// servidor é sempre "en", o texto-base — então o HTML estático nunca diverge.
+// servidor é sempre "pt", o idioma padrão — então o HTML estático nunca diverge.
 const listeners = new Set<() => void>();
 
 function readLang(): Lang {
   try {
-    return localStorage.getItem(LANG_STORAGE_KEY) === "pt" ? "pt" : "en";
+    return localStorage.getItem(LANG_STORAGE_KEY) === "en" ? "en" : "pt";
   } catch {
-    return "en";
+    return "pt";
   }
 }
 
@@ -42,9 +42,9 @@ function setLang(lang: Lang) {
   listeners.forEach((cb) => cb());
 }
 
-/** Idioma ativo para este projeto: "en" se ele não tem tradução. */
+/** Idioma ativo: padrão "pt"; "en" é opcional e é o único se não houver tradução. */
 export function useLang(project: Project): Lang {
-  const stored = useSyncExternalStore(subscribe, readLang, () => "en" as Lang);
+  const stored = useSyncExternalStore(subscribe, readLang, () => "pt" as Lang);
   return hasTranslation(project) ? stored : "en";
 }
 
@@ -63,7 +63,7 @@ export function LangToggle({ project }: { project: Project }) {
       aria-label={UI_COPY[lang].language}
       className="fixed right-6 top-[4.5rem] z-40 flex border border-foreground/20 bg-background/70 font-body text-[0.7rem] uppercase tracking-[0.25em] backdrop-blur"
     >
-      {(["en", "pt"] as const).map((l) => (
+      {(["pt", "en"] as const).map((l) => (
         <button
           key={l}
           type="button"

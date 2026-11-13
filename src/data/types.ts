@@ -22,7 +22,7 @@ export interface ProjectArchitecture {
   stack: string[];
 }
 
-/** Idiomas do conteúdo dos projetos. `en` é o texto-base do JSON. */
+/** Idiomas do conteúdo dos projetos. `en` é o texto-base do JSON; o padrão exibido é `pt`. */
 export type Lang = "en" | "pt";
 
 /**
