@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { getProject, getProjects } from "@/data/projects";
 import JsonLd from "@/components/seo/json-ld";
 import { absoluteUrl, ogImage } from "@/lib/site";
@@ -8,6 +7,7 @@ import {
   projectBreadcrumbSchema,
   projectSchema,
 } from "@/lib/structured-data";
+import { BackLink, LangToggle } from "@/components/project/lang";
 import ScrollRail from "@/components/project/scroll-rail";
 import ProjectHero from "@/components/project/project-hero";
 import DeviceShowcase from "@/components/project/device-showcase";
@@ -82,30 +82,23 @@ export default async function ProjectPage({
       <JsonLd data={projectSchema(project)} />
       <JsonLd data={projectBreadcrumbSchema(project)} />
 
+      <LangToggle project={project} />
       <ScrollRail />
       <ProjectHero project={project} />
 
       <DeviceShowcase project={project} />
 
-      <AboutSection index={nextIndex()} description={project.description} />
-      <FeaturesGrid index={nextIndex()} features={project.features} />
-      <ArchitectureSection
-        index={nextIndex()}
-        architecture={project.architecture}
-      />
+      <AboutSection index={nextIndex()} project={project} />
+      <FeaturesGrid index={nextIndex()} project={project} />
+      <ArchitectureSection index={nextIndex()} project={project} />
       {project.extras?.length ? (
-        <ExtraSections index={nextIndex()} extras={project.extras} />
+        <ExtraSections index={nextIndex()} project={project} />
       ) : null}
-      <LinksRow index={nextIndex()} links={project.links} />
+      <LinksRow index={nextIndex()} project={project} />
 
       <div className="border-t border-foreground/10">
         <div className="mx-auto max-w-4xl px-6 py-16">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 font-body text-xs uppercase tracking-[0.3em] text-muted transition-colors hover:text-primary"
-          >
-            <span aria-hidden="true">←</span> Todos os projetos
-          </Link>
+          <BackLink project={project} />
         </div>
       </div>
     </main>

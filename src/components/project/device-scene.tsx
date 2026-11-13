@@ -159,7 +159,7 @@ export default function DeviceScene({
   return (
     <Canvas
       frameloop="demand"
-      dpr={[1, 2]}
+      dpr={[1.5, 2]}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       camera={{ position: [0, 0, PHONE_CAMERA_Z], fov: FOV }}
       fallback={
