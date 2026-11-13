@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
+import { assetPath } from "@/lib/site";
 import type {
   ProjectArchitecture,
   ProjectExtra,
   ProjectFeature,
+  ProjectGalleryItem,
   ProjectLinks,
 } from "@/data/types";
 
@@ -80,6 +83,73 @@ export function FeaturesGrid({
             <p className="mt-2 font-body leading-relaxed text-muted">
               {feature.description}
             </p>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
+// Proporção reservada por moldura: desktop 16:10; mobile em coluna estreita.
+const FRAME_CLASS = {
+  desktop: "aspect-[16/10]",
+  mobile: "mx-auto w-full max-w-[260px] aspect-[390/844]",
+} as const;
+
+function GalleryMedia({ item }: { item: ProjectGalleryItem }) {
+  const src = assetPath(item.src);
+  return item.type === "video" ? (
+    <video
+      src={src}
+      aria-label={item.alt}
+      className="h-full w-full object-cover object-top"
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="metadata"
+    />
+  ) : (
+    <Image
+      src={src}
+      alt={item.alt}
+      fill
+      sizes={item.frame === "desktop" ? "(min-width: 896px) 832px, 100vw" : "260px"}
+      className="object-cover object-top"
+    />
+  );
+}
+
+export function GallerySection({
+  index,
+  gallery,
+}: {
+  index: string;
+  gallery?: ProjectGalleryItem[];
+}) {
+  if (!gallery?.length) return null;
+
+  return (
+    <Section index={index}>
+      <SectionHeading index={index} kicker="Gallery" title="In motion" />
+      <ul className="grid gap-10 sm:grid-cols-2">
+        {gallery.map((item) => (
+          <li
+            key={item.src}
+            className={item.frame === "desktop" ? "sm:col-span-2" : undefined}
+          >
+            <figure>
+              <div
+                className={`relative overflow-hidden border border-foreground/15 bg-foreground/5 ${
+                  item.frame === "desktop" ? "rounded-lg" : "rounded-[2rem]"
+                } ${FRAME_CLASS[item.frame]}`}
+              >
+                <GalleryMedia item={item} />
+              </div>
+              <figcaption className="mt-4 text-center font-body text-xs uppercase tracking-[0.3em] text-muted">
+                {item.caption}
+              </figcaption>
+            </figure>
           </li>
         ))}
       </ul>

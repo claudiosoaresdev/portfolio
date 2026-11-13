@@ -16,6 +16,7 @@ import {
   ArchitectureSection,
   ExtraSections,
   FeaturesGrid,
+  GallerySection,
   LinksRow,
 } from "@/components/project/sections";
 
@@ -89,6 +90,9 @@ export default async function ProjectPage({
 
       <AboutSection index={nextIndex()} description={project.description} />
       <FeaturesGrid index={nextIndex()} features={project.features} />
+      {project.gallery?.length ? (
+        <GallerySection index={nextIndex()} gallery={project.gallery} />
+      ) : null}
       <ArchitectureSection
         index={nextIndex()}
         architecture={project.architecture}

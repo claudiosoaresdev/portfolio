@@ -44,6 +44,19 @@ export interface ProjectExtra {
 }
 
 /**
+ * Item da galeria da página de detalhes (prints e vídeos em loop). Caminho
+ * cru, sem basePath — mesma regra de `cover`/`screenshot`. `frame` decide a
+ * moldura (janela de navegador ou celular) e a proporção reservada.
+ */
+export interface ProjectGalleryItem {
+  src: string; // "/projects/<slug>/gallery/<arquivo>.webp" ou ".mp4"
+  type: "image" | "video";
+  frame: "desktop" | "mobile";
+  caption: string;
+  alt: string;
+}
+
+/**
  * Os caminhos de asset (`cover`, `screenshot`, `desktopScreenshot`) são relativos à raiz do site,
  * SEM o basePath. Quem entrega a URL ao browser — `<Image src>` e a textura do
  * WebGL — aplica `assetPath()`; o JSON-LD aplica `absoluteUrl()`. Guardar o
@@ -66,6 +79,7 @@ export interface Project {
   architecture: ProjectArchitecture;
   links: ProjectLinks; // all optional
   extras?: ProjectExtra[]; // optional, rendered after architecture
+  gallery?: ProjectGalleryItem[]; // optional, prints/vídeos após as features
 }
 
 /**

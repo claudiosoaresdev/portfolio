@@ -1,6 +1,149 @@
 {
   "projects": [
     {
+      "slug": "lunnari-digital",
+      "name": "Lunnari Digital",
+      "tagline": "A cinematic landing page for an AI-first software house.",
+      "description": "The official website of Lunnari Digital, a Brazilian software house that combines product, design, engineering and AI. A scroll-driven, story-first landing page that replaces generic agency promises with proof: real products, a clear process and a guided conversation to start a project. It ships in Portuguese, English and Spanish, in light and dark themes.",
+      "cover": "/projects/lunnari-digital/cover.webp",
+      "screenshot": "/projects/lunnari-digital/screen.webp",
+      "desktopScreenshot": "/projects/lunnari-digital/desktop.webp",
+      "device": "web",
+      "year": "2026",
+      "role": "Product, design and development",
+      "features": [
+        {
+          "title": "Cinematic scroll story",
+          "description": "A hero video, orbiting moon phases and before/after scenes tell the story as you scroll, with motion tuned to respect reduced-motion preferences."
+        },
+        {
+          "title": "AI-guided contact",
+          "description": "Instead of a cold form, a conversational assistant helps visitors describe their project and sends a clean summary straight to the team by email."
+        },
+        {
+          "title": "Three languages, two themes",
+          "description": "Portuguese, English and Spanish with locale-aware routing, plus a light and dark theme that follows the system by default."
+        },
+        {
+          "title": "Proof over promises",
+          "description": "Real cases and in-house products such as LunnaPay replace the usual list of services and technology logos."
+        },
+        {
+          "title": "Built to be found and trusted",
+          "description": "Structured SEO metadata, generated Open Graph images, a consent-aware cookie banner and a privacy policy are part of the base."
+        }
+      ],
+      "gallery": [
+        {
+          "src": "/projects/lunnari-digital/gallery/hero-desktop.mp4",
+          "type": "video",
+          "frame": "desktop",
+          "caption": "Hero and opening scroll",
+          "alt": "Looping capture of the Lunnari hero: an astronaut on the moon with the headline and call to action, then the page scrolling into the next section."
+        },
+        {
+          "src": "/projects/lunnari-digital/gallery/desktop-sobre.webp",
+          "type": "image",
+          "frame": "desktop",
+          "caption": "Who we are",
+          "alt": "Desktop view of the Who we are section describing the three fronts of Lunnari."
+        },
+        {
+          "src": "/projects/lunnari-digital/gallery/desktop-ia.webp",
+          "type": "image",
+          "frame": "desktop",
+          "caption": "AI in the business: before and after",
+          "alt": "Desktop view of the AI section that turns a chaotic before scene into an automated after scene."
+        },
+        {
+          "src": "/projects/lunnari-digital/gallery/desktop-cases.webp",
+          "type": "image",
+          "frame": "desktop",
+          "caption": "Cases",
+          "alt": "Desktop view of the cases section with client and concept projects."
+        },
+        {
+          "src": "/projects/lunnari-digital/gallery/desktop-produtos.webp",
+          "type": "image",
+          "frame": "desktop",
+          "caption": "In-house products",
+          "alt": "Desktop view of the products section featuring LunnaPay."
+        },
+        {
+          "src": "/projects/lunnari-digital/gallery/desktop-processo.webp",
+          "type": "image",
+          "frame": "desktop",
+          "caption": "Process in six steps",
+          "alt": "Desktop view of the process section: six steps from Discover to Evolve along an arc, with three commitments below."
+        },
+        {
+          "src": "/projects/lunnari-digital/gallery/scroll-desktop.mp4",
+          "type": "video",
+          "frame": "desktop",
+          "caption": "Full scroll, desktop",
+          "alt": "Looping capture scrolling through the Lunnari landing page on desktop."
+        },
+        {
+          "src": "/projects/lunnari-digital/gallery/scroll-mobile.mp4",
+          "type": "video",
+          "frame": "mobile",
+          "caption": "Full scroll, mobile",
+          "alt": "Looping capture scrolling through the Lunnari landing page on a phone."
+        },
+        {
+          "src": "/projects/lunnari-digital/gallery/mobile-ia.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "AI section, mobile",
+          "alt": "Phone view of the AI before and after section."
+        },
+        {
+          "src": "/projects/lunnari-digital/gallery/mobile-cases.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Cases, mobile",
+          "alt": "Phone view of the cases section."
+        },
+        {
+          "src": "/projects/lunnari-digital/gallery/mobile-produtos.webp",
+          "type": "image",
+          "frame": "mobile",
+          "caption": "Products, mobile",
+          "alt": "Phone view of the products section."
+        }
+      ],
+      "architecture": {
+        "summary": "Next.js App Router with React 19 and Tailwind CSS v4. Scroll choreography runs on GSAP and Motion, while next-intl handles the three locales and route prefixes. The contact assistant validates answers with Zod and delivers the summary through Resend. Unit tests run on Vitest and end-to-end plus accessibility checks run on Playwright with axe-core, gated by lint, commitlint and Husky.",
+        "stack": [
+          "Next.js",
+          "React",
+          "TypeScript",
+          "Tailwind CSS",
+          "GSAP",
+          "Motion",
+          "next-intl",
+          "Zod",
+          "Resend",
+          "Vitest",
+          "Playwright",
+          "Vercel"
+        ]
+      },
+      "links": {
+        "website": "https://lunnari.digital"
+      },
+      "extras": [
+        {
+          "title": "Conversational lead capture",
+          "body": "The contact step is a short guided chat that asks about the project, budget and timing, lets the visitor review and edit the answers, and only then sends them. Answers stay in the browser until submission, the server validates every field and rate-limits abuse, and the team receives a structured summary by email."
+        },
+        {
+          "title": "Design system and brand",
+          "body": "The brand pairs Anton headlines with Urbanist body text over a violet orbit gradient, in a light and a dark palette driven by CSS variables. The logo, the moon phases and the orbital arc repeat across the hero, the process and the footer so the page feels like one continuous story."
+        }
+      ]
+    },
+    {
       "slug": "nebula-wallet",
       "name": "Nebula Wallet",
       "tagline": "A borderless crypto and fiat wallet built for speed.",
@@ -161,7 +304,9 @@
       "cover": "/projects/orbit-tasks/cover.webp",
       "screenshot": "/projects/orbit-tasks/screen.webp",
       "device": "ios",
-      "tags": ["backend"],
+      "tags": [
+        "backend"
+      ],
       "year": "2026",
       "role": "Full-stack developer",
       "features": [
