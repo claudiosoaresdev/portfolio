@@ -53,17 +53,23 @@ export default function PhoneModel({
   onReady?: () => void;
 }) {
   const invalidate = useThree((state) => state.invalidate);
+  const maxAnisotropy = useThree((state) => state.gl.capabilities.getMaxAnisotropy());
   // Configure the texture in useTexture's onLoad (layout effect, off the render
   // path): TextureLoader defaults to NoColorSpace; screenshots are sRGB.
   // onReady lets the wrapper fade out the static stand-in without a gap.
   const configureTexture = useCallback(
     (tex: THREE.Texture) => {
       tex.colorSpace = THREE.SRGBColorSpace;
+      // Textura vista de viés e bem reduzida: filtro anisotrópico máximo +
+      // mipmaps trilineares mantêm o texto legível em vez de borrado.
+      tex.anisotropy = maxAnisotropy;
+      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.generateMipmaps = true;
       tex.needsUpdate = true;
       invalidate();
       onReady?.();
     },
-    [invalidate, onReady],
+    [invalidate, onReady, maxAnisotropy],
   );
   // useTexture fetches directly (no Next router), so basePath is applied here.
   const texture = useTexture(assetPath(screenshot), configureTexture);

@@ -1,3 +1,6 @@
+/projects/lunnari-digital/cover.webp
+/projects/lunnari-digital/screen.webp
+/projects/lunnari-digital/desktop.webp
 /projects/nebula-wallet/cover.webp
 /projects/nebula-wallet/screen.webp
 /projects/aurora-fit/cover.webp

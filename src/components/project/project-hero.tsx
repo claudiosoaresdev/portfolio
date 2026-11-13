@@ -7,6 +7,7 @@ import { motion } from "motion/react";
 import type { Project } from "@/data/types";
 import { assetPath } from "@/lib/site";
 import { platformLabel } from "@/data/platform";
+import { useLocalized } from "./lang";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -27,7 +28,8 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
 };
 
-export default function ProjectHero({ project }: { project: Project }) {
+export default function ProjectHero({ project: base }: { project: Project }) {
+  const { project, t } = useLocalized(base);
   const [coverLoaded, setCoverLoaded] = useState(false);
 
   // next/image may skip onLoad for a cache-complete image that hydrated late;
@@ -50,7 +52,7 @@ export default function ProjectHero({ project }: { project: Project }) {
       <ViewTransition name={`project-${project.slug}`} share="morph">
         <div className="absolute inset-0">
           <Image
-            src={assetPath(project.cover)}
+            src={assetPath(project.heroCover ?? project.cover)}
             alt={`${project.name} cover`}
             fill
             priority
@@ -78,7 +80,7 @@ export default function ProjectHero({ project }: { project: Project }) {
         }`}
       >
         <span className="font-body text-[0.65rem] uppercase tracking-[0.4em] text-primary motion-safe:animate-pulse">
-          Loading
+          {t.loading}
         </span>
         <span className="relative h-px w-16 overflow-hidden bg-foreground/15">
           <span className="absolute inset-y-0 left-0 w-1/3 bg-primary motion-safe:animate-[hud-scan_1s_ease-in-out_infinite]" />
@@ -126,7 +128,7 @@ export default function ProjectHero({ project }: { project: Project }) {
           variants={item}
           className="mt-16 flex items-center gap-3 font-body text-[0.7rem] uppercase tracking-[0.3em] text-muted"
         >
-          <span>Scroll</span>
+          <span>{t.scroll}</span>
           <span aria-hidden="true" className="h-8 w-px bg-foreground/30" />
         </motion.div>
       </motion.div>
