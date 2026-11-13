@@ -3,47 +3,42 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useScroll } from "motion/react";
 
-type Stop = { index: string; offset: number };
-
-/** Marker position along the track (0 = top, 1 = bottom) for stop i of n. */
-const markerAt = (i: number, n: number) => (i + 1) / (n + 1);
-
 /**
- * Piecewise map: scrollY → fill (0..1) so the fill tip reaches marker i
- * exactly when section i's top crosses the viewport middle, and runs on to
- * the bottom of the track at the end of the page.
+ * Scroll offsets where each numbered section "arrives" (its top at the
+ * viewport middle). Segment k spans [bounds[k], bounds[k+1]]: segment 0 is the
+ * intro (hero + device showcase) before 01, segment k ≥ 1 is section k.
  */
-function fillFor(y: number, stops: Stop[], maxScroll: number): number {
-  const n = stops.length;
-  if (n === 0) return maxScroll > 0 ? y / maxScroll : 0;
-  const xs = [0, ...stops.map((s) => s.offset), Math.max(maxScroll, stops[n - 1].offset + 1)];
-  const ys = [0, ...stops.map((_, i) => markerAt(i, n)), 1];
-  if (y <= xs[0]) return 0;
-  for (let k = 1; k < xs.length; k++) {
-    if (y <= xs[k]) {
-      const t = (y - xs[k - 1]) / Math.max(xs[k] - xs[k - 1], 1);
-      return ys[k - 1] + t * (ys[k] - ys[k - 1]);
+function segmentAt(y: number, bounds: number[]): { k: number; local: number } {
+  for (let k = 0; k < bounds.length - 1; k++) {
+    if (y < bounds[k + 1]) {
+      const span = Math.max(bounds[k + 1] - bounds[k], 1);
+      return { k, local: Math.min(Math.max((y - bounds[k]) / span, 0), 1) };
     }
   }
-  return 1;
+  return { k: bounds.length - 2, local: 1 };
 }
 
 /**
- * Page-wide HUD scroll rail for the project detail page: fixed on the left
- * (sm+). One number per numbered content section (`01 / Overview`…) sits ON
- * the track; the lime fill reaches a number exactly when its section arrives
- * (section top at the viewport middle), so the line runs "under" 01, 02, 03…
- * in step with the page. Reached numbers turn lime, the current one brightest.
+ * Page-wide HUD scroll rail for the project detail page, fixed on the left
+ * (sm+), built as an accordion of segments separated by the section numbers
+ * (`01 / Overview`…):
+ *
+ *   intro ─ 01 ─ section 1 ─ 02 ─ section 2 ─ … ─ NN ─ section N
+ *
+ * The segment of the section you're in EXPANDS and fills lime with your
+ * progress through it; every other segment COLLAPSES to a short stub (lime if
+ * already passed, gray if ahead). Arriving at a section moves the expansion
+ * to the segment right under its number.
+ *
  * Sections opt in with `data-rail-index="NN"`; numbers are read from the DOM,
  * so a section that renders nothing never gets one.
  */
 export default function ScrollRail() {
   const { scrollY } = useScroll();
-  const fill = useMotionValue(0);
-  const stopsRef = useRef<Stop[]>([]);
-  const maxRef = useRef(0);
+  const local = useMotionValue(0);
+  const boundsRef = useRef<number[]>([0, 1]);
   const [indices, setIndices] = useState<string[]>([]);
-  const [reached, setReached] = useState(-1);
+  const [active, setActive] = useState(0);
 
   useEffect(() => {
     const els = Array.from(
@@ -51,25 +46,20 @@ export default function ScrollRail() {
     );
 
     const update = (y: number) => {
-      const stops = stopsRef.current;
-      fill.set(fillFor(y, stops, maxRef.current));
-      let r = -1;
-      stops.forEach((s, i) => {
-        if (y >= s.offset) r = i;
-      });
-      setReached(r);
+      const { k, local: l } = segmentAt(y, boundsRef.current);
+      local.set(l);
+      setActive(k);
     };
 
-    // Offsets = scroll position at which each section's top hits mid-viewport.
     const measure = () => {
       const mid = window.innerHeight / 2;
-      stopsRef.current = els.map((el) => ({
-        index: el.dataset.railIndex ?? "",
-        offset: el.getBoundingClientRect().top + window.scrollY - mid,
-      }));
-      maxRef.current =
-        document.documentElement.scrollHeight - window.innerHeight;
-      setIndices(stopsRef.current.map((s) => s.index));
+      const offsets = els.map(
+        (el) => el.getBoundingClientRect().top + window.scrollY - mid,
+      );
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const last = offsets.length ? offsets[offsets.length - 1] : 0;
+      boundsRef.current = [0, ...offsets, Math.max(max, last + 1)];
+      setIndices(els.map((el) => el.dataset.railIndex ?? ""));
       update(window.scrollY);
     };
 
@@ -81,9 +71,30 @@ export default function ScrollRail() {
       ro.disconnect();
       unsubscribe();
     };
-  }, [scrollY, fill]);
+  }, [scrollY, local]);
 
-  const n = indices.length;
+  // Segments: 0 = intro, then one after each number.
+  const segments = indices.length + 1;
+
+  const segment = (k: number) => {
+    const isActive = k === active;
+    const passed = k < active;
+    return (
+      <div
+        key={`seg-${k}`}
+        className={`relative min-h-3 w-px basis-0 overflow-hidden transition-[flex-grow] duration-500 ease-out motion-reduce:transition-none ${
+          isActive ? "grow-[12]" : "grow"
+        } ${passed ? "bg-primary/60" : "bg-foreground/15"}`}
+      >
+        {isActive && (
+          <motion.div
+            style={{ scaleY: local }}
+            className="absolute inset-0 origin-top bg-primary"
+          />
+        )}
+      </div>
+    );
+  };
 
   return (
     <div
@@ -93,27 +104,23 @@ export default function ScrollRail() {
       <span className="font-body text-[0.6rem] uppercase tracking-[0.3em] text-muted [writing-mode:vertical-rl]">
         Scroll
       </span>
-      <div className="relative mt-4 w-px flex-1 bg-foreground/15">
-        <motion.div
-          style={{ scaleY: fill }}
-          className="absolute inset-0 origin-top bg-primary"
-        />
+      <div className="mt-4 flex flex-1 flex-col items-center">
+        {segments > 1 && segment(0)}
         {indices.map((index, i) => (
-          <span
-            key={index}
-            style={{ top: `${markerAt(i, n) * 100}%` }}
-            // Number sits just above its marker, so the fill tip stops right
-            // under it when the section arrives.
-            className={`absolute left-1/2 -translate-x-1/2 -translate-y-full bg-background px-0.5 py-1 font-display text-[0.6rem] leading-none transition-colors duration-300 ${
-              i === reached
-                ? "text-primary"
-                : i < reached
-                  ? "text-primary/50"
-                  : "text-muted"
-            }`}
-          >
-            {index}
-          </span>
+          <div key={index} className="contents">
+            <span
+              className={`py-1.5 font-display text-[0.6rem] leading-none transition-colors duration-300 ${
+                i + 1 === active
+                  ? "text-primary"
+                  : i + 1 < active
+                    ? "text-primary/50"
+                    : "text-muted"
+              }`}
+            >
+              {index}
+            </span>
+            {segment(i + 1)}
+          </div>
         ))}
       </div>
     </div>
