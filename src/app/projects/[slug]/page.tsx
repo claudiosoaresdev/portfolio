@@ -8,6 +8,7 @@ import {
   projectBreadcrumbSchema,
   projectSchema,
 } from "@/lib/structured-data";
+import ScrollRail from "@/components/project/scroll-rail";
 import ProjectHero from "@/components/project/project-hero";
 import DeviceShowcase from "@/components/project/device-showcase";
 import {
@@ -81,6 +82,7 @@ export default async function ProjectPage({
       <JsonLd data={projectSchema(project)} />
       <JsonLd data={projectBreadcrumbSchema(project)} />
 
+      <ScrollRail />
       <ProjectHero project={project} />
 
       <DeviceShowcase project={project} />

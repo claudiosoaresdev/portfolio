@@ -174,24 +174,6 @@ export default function DeviceShowcase({ project }: { project: Project }) {
       className="relative h-[260vh]"
     >
       <div className="sticky top-0 h-svh w-full overflow-hidden">
-        {/* Progress rail — far-left HUD track that fills as the section scrolls. */}
-        <div className="pointer-events-none absolute inset-y-0 left-4 z-30 hidden flex-col items-center py-24 sm:flex">
-          <span className="font-body text-[0.6rem] uppercase tracking-[0.3em] text-muted [writing-mode:vertical-rl]">
-            Scroll
-          </span>
-          <div className="relative my-4 w-px flex-1 overflow-hidden bg-foreground/15">
-            <motion.div
-              style={{ scaleY: scrollYProgress }}
-              className="absolute inset-0 origin-top bg-primary"
-            />
-          </div>
-          <div className="flex flex-col items-center gap-2 font-display text-[0.6rem] text-muted">
-            <span>01</span>
-            <span>02</span>
-            <span>03</span>
-          </div>
-        </div>
-
         {/* Canvas — full-bleed behind content on mobile, right 55% column on lg. */}
         <div
           className={`absolute z-0 lg:inset-y-0 lg:left-[45%] lg:right-0 lg:h-auto ${
