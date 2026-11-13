@@ -12,6 +12,8 @@ feature_atual: none
 
 ## Technical decisions
 
+- **2026-11-13** — `[device-polish]` Luz dos modelos 3D = `Environment frames={1}` com Lightformers (sem HDR) + `scene.environmentRotation` amortecido seguindo o ponteiro (só `hover: hover` e sem reduced motion; invalida só enquanto converge). Lição: metal (`metalness` alto) tinge o reflexo com a cor-base — base `#101014` = carcaça preta sem reflexo; usar grafite `#4a4e57`. Superfícies planas de frente (tampo do teclado) refletem o "teto": precisa de Lightformer overhead.
+
 - **2026-11-13** — `[web-showcase]` Tipos `web`/`fullstack` (`device` ampliado + `desktopScreenshot` + `phone`). MacBook 3D procedural (RoundedBox, sem GLTF) na mesma cena do celular, com enquadramento de câmera por aspect em `useFrame`; abaixo de `lg` o par ocupa os 55% de cima e o texto fica embaixo. Rejeitados: GLTF (peso + clash com celular estilizado), mockup 2.5D CSS (não gira). Spec/plano em `docs/superpowers/`. Demos em commit próprio (`chore(projects): projetos demo…`).
 
 - **2026-09-24** — `[blog]` Blog em `.md` puro em `content/blog/`, lido via fs + gray-matter e convertido com unified (remark-gfm → rehype-slug/autolink/pretty-code+shiki → string) em `src/data/posts.ts`; HTML injetado no build. Rejeitados: `@next/mdx` (sem frontmatter nativo, plugins só por nome no Turbopack), next-mdx-remote (só compensa com JSX no post), Velite/Content Collections (build step extra). Data vem do frontmatter (checkout raso do CI não tem histórico git). Links/imagens de raiz recebem basePath via `src/lib/rehype-site-links.ts`. OG de post em `public/og/blog/<slug>.png` (subpasta evita colisão com slug de projeto). Trade-off: sem componentes React dentro dos posts.
