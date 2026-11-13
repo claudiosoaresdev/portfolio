@@ -80,7 +80,7 @@ export default function DeviceCanvas({
           revealScene ? "opacity-0" : "opacity-100"
         }`}
       >
-        <StaticDeviceFallback spec={spec} alt={alt} />
+        <StaticDeviceFallback spec={spec} alt={alt} layer />
       </div>
 
       {showScene && (

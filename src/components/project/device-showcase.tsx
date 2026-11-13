@@ -174,9 +174,11 @@ export default function DeviceShowcase({ project }: { project: Project }) {
       className="relative h-[260vh]"
     >
       <div className="sticky top-0 h-svh w-full overflow-hidden">
-        {/* Canvas — full-bleed behind content on mobile, right 55% column on lg. */}
+        {/* Canvas — a background layer under the copy. Full-bleed on lg, where
+            the scene itself places the devices to the right of the text; below
+            lg the pair gets the top 55% (phone-only stays full-bleed). */}
         <div
-          className={`absolute z-0 lg:inset-y-0 lg:left-[45%] lg:right-0 lg:h-auto ${
+          className={`absolute z-0 lg:inset-0 lg:h-auto ${
             pair ? "inset-x-0 top-0 h-[55%]" : "inset-0"
           }`}
         >
@@ -193,6 +195,7 @@ export default function DeviceShowcase({ project }: { project: Project }) {
               <StaticDeviceFallback
                 spec={spec}
                 alt={alt}
+                layer
               />
             )}
           </div>

@@ -70,23 +70,36 @@ function PhoneFrame({
  * by the same rule as the 3D camera framing (pair ≈ 7.3×5.0 units inside
  * device-scene's PAIR_FRAME 9.4×5.6 → 78% of width / 89% of height), so the
  * static → 3D fade never resizes the pair. Keep in sync with PAIR_FRAME.
+ *
+ * `layer` mirrors the scroll showcase's full-bleed background canvas: from lg
+ * the pair is framed against the right 55% column with PAIR_FRAME_LG 7.52×5.6
+ * (7.3/7.52 → 97% of 55cqw ≈ 53.35cqw) and centred at 68% of the width; the
+ * phone sits centred in that column (72.5%). Keep in sync with device-scene.
  */
 export default function StaticDeviceFallback({
   spec,
   alt,
+  layer = false,
 }: {
   spec: DeviceSpec;
   alt: string;
+  layer?: boolean;
 }) {
   if (!hasDesktop(spec.kind) || !spec.desktopScreenshot) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
+      <div
+        className={`flex h-full w-full items-center justify-center ${
+          layer ? "[container-type:size]" : ""
+        }`}
+      >
         <PhoneFrame
           phone={spec.phone}
           screenshot={spec.screenshot}
           alt={alt}
           sizes="20rem"
-          className="relative h-full max-h-[34rem]"
+          className={`relative h-full max-h-[34rem] ${
+            layer ? "lg:translate-x-[22.5cqw]" : ""
+          }`}
         />
       </div>
     );
@@ -94,7 +107,13 @@ export default function StaticDeviceFallback({
 
   return (
     <div className="flex h-full w-full items-center justify-center [container-type:size]">
-      <div className="relative aspect-[16/11] w-[min(78cqw,calc(89cqh*16/11))]">
+      <div
+        className={`relative aspect-[16/11] w-[min(78cqw,calc(89cqh*16/11))] ${
+          layer
+            ? "lg:w-[min(53.35cqw,calc(89cqh*16/11))] lg:translate-x-[18cqw]"
+            : ""
+        }`}
+      >
         {/* MacBook — lid (16:10 screen in a bezel) + thin base */}
         <div className="absolute left-0 top-0 w-[82%]">
           <div className="rounded-[0.9rem] border border-foreground/15 bg-background p-[2.2%] shadow-[0_0_60px_-18px_var(--color-primary)]">
