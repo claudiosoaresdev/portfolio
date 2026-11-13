@@ -12,13 +12,12 @@ import StaticDeviceFallback from "./static-device-fallback";
 
 import {
   BEZEL_COLOR,
-  BODY_COLOR,
   CUTOUT_COLOR,
-  INDIGO,
-  KEY_LIGHT,
   LIME,
+  METAL_COLOR,
 } from "./device-materials";
 import LaptopModel from "./laptop-model";
+import StudioLighting from "./studio-lighting";
 
 // Scroll-driven pose extremes, interpolated by `progress` in [0, 1].
 const ROT_Y = [-0.55, 0.55] as const;
@@ -79,17 +78,19 @@ function PhoneModel({
         smoothness={8}
         bevelSegments={4}
       >
-        <meshStandardMaterial
-          color={BODY_COLOR}
-          metalness={0.7}
-          roughness={0.32}
+        <meshPhysicalMaterial
+          color={METAL_COLOR}
+          metalness={0.9}
+          roughness={0.3}
+          clearcoat={0.4}
+          clearcoatRoughness={0.2}
         />
       </RoundedBox>
 
       {/* Bezel plate directly behind the screen */}
       <mesh position={[0, 0, 0.14]}>
         <planeGeometry args={[2.1, 4.5]} />
-        <meshStandardMaterial color={BEZEL_COLOR} metalness={0.4} roughness={0.5} />
+        <meshPhysicalMaterial color={BEZEL_COLOR} metalness={0} roughness={0.12} clearcoat={1} clearcoatRoughness={0.08} />
       </mesh>
 
       {/* Screen — unlit so the screenshot shows in true colors */}
@@ -227,10 +228,7 @@ export default function DeviceScene({
         <StaticDeviceFallback spec={spec} alt={alt} />
       }
     >
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[4, 5, 5]} intensity={1.1} color={KEY_LIGHT} />
-      <directionalLight position={[-5, 1, 2]} intensity={0.4} color={INDIGO} />
-      <directionalLight position={[-2, -1, 4]} intensity={0.25} color={LIME} />
+      <StudioLighting />
 
       <Suspense fallback={null}>
         <DeviceRig

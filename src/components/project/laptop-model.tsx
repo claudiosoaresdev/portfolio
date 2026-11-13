@@ -5,7 +5,7 @@ import { useThree } from "@react-three/fiber";
 import { RoundedBox, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { assetPath } from "@/lib/site";
-import { BEZEL_COLOR, BODY_COLOR, LIME } from "./device-materials";
+import { BEZEL_COLOR, LIME, METAL_COLOR } from "./device-materials";
 
 // Scene units. The lid hinges on the base's back edge; the group origin sits
 // roughly at the visual center of the open laptop so the rig rotates it in place.
@@ -48,7 +48,7 @@ export default function LaptopModel({
     <group position={[0, -1.7, 0]}>
       {/* Base */}
       <RoundedBox args={[BASE.w, BASE.h, BASE.d]} radius={0.05} smoothness={4}>
-        <meshStandardMaterial color={BODY_COLOR} metalness={0.7} roughness={0.32} />
+        <meshPhysicalMaterial color={METAL_COLOR} metalness={0.9} roughness={0.3} clearcoat={0.4} clearcoatRoughness={0.2} />
       </RoundedBox>
 
       {/* Key grid — suggestion only */}
@@ -74,7 +74,7 @@ export default function LaptopModel({
         {/* Trackpad */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, BASE.d * 0.36]}>
           <planeGeometry args={[BASE.w * 0.3, BASE.d * 0.22]} />
-          <meshStandardMaterial color={BEZEL_COLOR} metalness={0.4} roughness={0.5} />
+          <meshPhysicalMaterial color={BEZEL_COLOR} metalness={0.2} roughness={0.25} clearcoat={0.6} />
         </mesh>
       </group>
 
@@ -92,11 +92,11 @@ export default function LaptopModel({
           smoothness={4}
           position={[0, LID.h / 2, 0]}
         >
-          <meshStandardMaterial color={BODY_COLOR} metalness={0.7} roughness={0.32} />
+          <meshPhysicalMaterial color={METAL_COLOR} metalness={0.9} roughness={0.3} clearcoat={0.4} clearcoatRoughness={0.2} />
         </RoundedBox>
         <mesh position={[0, LID.h / 2, LID.d / 2 + 0.001]}>
           <planeGeometry args={[LID.w - 0.12, LID.h - 0.12]} />
-          <meshStandardMaterial color={BEZEL_COLOR} metalness={0.4} roughness={0.5} />
+          <meshPhysicalMaterial color={BEZEL_COLOR} metalness={0} roughness={0.12} clearcoat={1} clearcoatRoughness={0.08} />
         </mesh>
         <mesh position={[0, LID.h / 2 + 0.04, LID.d / 2 + 0.004]}>
           <planeGeometry args={[SCREEN.w, SCREEN.h]} />
