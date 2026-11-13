@@ -2,21 +2,15 @@
 
 import { Suspense, useCallback, useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, RoundedBox, useTexture } from "@react-three/drei";
-import { assetPath } from "@/lib/site";
+import { ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import type { MotionValue } from "motion/react";
-import type { DeviceSpec, PhoneKind } from "@/data/types";
+import type { DeviceSpec } from "@/data/types";
 import { hasDesktop } from "@/data/platform";
 import StaticDeviceFallback from "./static-device-fallback";
 
-import {
-  BEZEL_COLOR,
-  CUTOUT_COLOR,
-  LIME,
-  METAL_COLOR,
-} from "./device-materials";
 import LaptopModel from "./laptop-model";
+import PhoneModel from "./phone-model";
 import StudioLighting from "./studio-lighting";
 
 // Scroll-driven pose extremes, interpolated by `progress` in [0, 1].
@@ -35,91 +29,6 @@ const PAIR_POS_Y = [0.2, -0.2] as const;
 const PAIR_FRAME = { w: 9.4, h: 5.6 };
 const PHONE_CAMERA_Z = 6.2;
 const FOV = 35;
-
-function PhoneModel({
-  device,
-  screenshot,
-  onReady,
-}: {
-  device: PhoneKind;
-  screenshot: string;
-  onReady?: () => void;
-}) {
-  const invalidate = useThree((state) => state.invalidate);
-  // Configure the loaded texture in useTexture's onLoad (drei runs it in a
-  // layout effect, off the render path). TextureLoader defaults to
-  // NoColorSpace; screenshots are authored in sRGB. Stable so it runs once.
-  // onReady tells the wrapper the scene has textured content, so it can fade
-  // out the static stand-in without a visible gap.
-  const configureTexture = useCallback(
-    (tex: THREE.Texture) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.needsUpdate = true;
-      invalidate();
-      onReady?.();
-    },
-    [invalidate, onReady],
-  );
-  // `useTexture` faz fetch direto, sem passar pelo roteador da Next, então o
-  // basePath tem que ser aplicado à mão — sem isso a textura 404 sob
-  // /<repo> e a cena cai no fallback estático.
-  const texture = useTexture(assetPath(screenshot), configureTexture);
-
-  const isIos = device === "ios";
-  // Subtly squarer silhouette for iOS, rounder for Android.
-  const bodyRadius = isIos ? 0.18 : 0.12;
-
-  return (
-    <group>
-      {/* Chassis */}
-      <RoundedBox
-        args={[2.2, 4.6, 0.28]}
-        radius={bodyRadius}
-        smoothness={8}
-        bevelSegments={4}
-      >
-        <meshPhysicalMaterial
-          color={METAL_COLOR}
-          metalness={0.9}
-          roughness={0.3}
-          clearcoat={0.4}
-          clearcoatRoughness={0.2}
-        />
-      </RoundedBox>
-
-      {/* Bezel plate directly behind the screen */}
-      <mesh position={[0, 0, 0.14]}>
-        <planeGeometry args={[2.1, 4.5]} />
-        <meshPhysicalMaterial color={BEZEL_COLOR} metalness={0} roughness={0.12} clearcoat={1} clearcoatRoughness={0.08} />
-      </mesh>
-
-      {/* Screen — unlit so the screenshot shows in true colors */}
-      <mesh position={[0, 0, 0.146]}>
-        <planeGeometry args={[2.02, 4.38]} />
-        <meshBasicMaterial map={texture} toneMapped={false} />
-      </mesh>
-
-      {/* Lime accent strip along the right edge */}
-      <mesh position={[1.09, 0, 0.05]}>
-        <boxGeometry args={[0.02, 3.4, 0.16]} />
-        <meshBasicMaterial color={LIME} toneMapped={false} />
-      </mesh>
-
-      {/* Front-camera differentiator */}
-      {isIos ? (
-        <mesh position={[0, 1.9, 0.152]} rotation={[0, 0, Math.PI / 2]}>
-          <capsuleGeometry args={[0.07, 0.34, 4, 16]} />
-          <meshStandardMaterial color={CUTOUT_COLOR} metalness={0.2} roughness={0.6} />
-        </mesh>
-      ) : (
-        <mesh position={[0, 1.98, 0.152]}>
-          <circleGeometry args={[0.07, 24]} />
-          <meshStandardMaterial color={CUTOUT_COLOR} metalness={0.2} roughness={0.6} />
-        </mesh>
-      )}
-    </group>
-  );
-}
 
 /** Calls `onReady` once every texture in the scene has loaded. */
 function useAllReady(count: number, onReady?: () => void) {
