@@ -2,9 +2,10 @@
 /**
  * generate-seed-assets.mjs — placeholder art generator for seed projects (T-005)
  *
- * Produces, per project slug, two assets under public/projects/<slug>/:
- *   - cover.png   1080x1920  (9:16 carousel / hero art)
- *   - screen.png  1080x2340  (phone-screen UI mock)
+ * Produces, per project slug, these assets under public/projects/<slug>/:
+ *   - cover.png    1080x1920  (9:16 carousel / hero art)
+ *   - screen.png   1080x2340  (phone-screen UI mock)
+ *   - desktop.png  1600x1000  (16:10 desktop screen — web/fullstack only)
  * plus the authored SVG sources (cover.svg / screen.svg) kept alongside as the
  * regenerable, human-readable source of truth.
  *
@@ -24,7 +25,8 @@
  * unavailable or produce wrong-sized output, the script falls back to shipping
  * the authored 9:16 SVGs as the final assets.
  *
- * Run:  node scripts/generate-seed-assets.mjs
+ * Run:  node scripts/generate-seed-assets.mjs            # all projects
+ *       node scripts/generate-seed-assets.mjs <slug>...  # only these (MANIFEST untouched)
  */
 
 import {
@@ -60,12 +62,15 @@ const FONT_MONO = "'SFMono-Regular', Menlo, 'Courier New', monospace";
 
 const COVER = { W: 1080, H: 1920, ratio: '9:16' };
 const SCREEN = { W: 1080, H: 2340, ratio: '9:19.5' };
+const DESKTOP = { W: 1600, H: 1000, ratio: '16:10' };
 
 const PROJECTS = [
   { slug: 'nebula-wallet', platform: 'android', domain: 'fintech',      name: ['NEBULA', 'WALLET'], index: '01' },
   { slug: 'aurora-fit',    platform: 'ios',     domain: 'fitness',      name: ['AURORA', 'FIT'],    index: '02' },
   { slug: 'cipher-notes',  platform: 'android', domain: 'encryption',   name: ['CIPHER', 'NOTES'],  index: '03' },
   { slug: 'orbit-tasks',   platform: 'ios',     domain: 'productivity', name: ['ORBIT', 'TASKS'],   index: '04' },
+  { slug: 'lumen-commerce', platform: 'web',      domain: 'e-commerce', name: ['LUMEN', 'SHOP'],   index: '05' },
+  { slug: 'pulse-health',   platform: 'fullstack', domain: 'health',    name: ['PULSE', 'CARE'],   index: '06' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -210,7 +215,34 @@ function motifTasks(mx, my) {
   s += `<path d="M ${mx - 12} ${my} l 8 9 l 16 -18" fill="none" stroke="${P.primary}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`;
   return s;
 }
+function motifCommerce(mx, my) {
+  let s = '';
+  // Stacked product tiles drifting up-right — a storefront grid in motion.
+  for (let i = 0; i < 4; i++) {
+    const x = mx - 260 + i * 70, y = my - 40 - i * 70;
+    const lime = i === 3;
+    s += `<rect x="${x}" y="${y}" width="360" height="240" rx="22" fill="${lime ? P.primary : P.secondary}" fill-opacity="${lime ? 0.9 : 0.12 + i * 0.08}" stroke="${P.fg}" stroke-opacity="${lime ? 0 : 0.2}" stroke-width="1.5"/>`;
+  }
+  s += `<circle cx="${mx}" cy="${my}" r="360" fill="none" stroke="${P.fg}" stroke-opacity="0.1" stroke-width="1.5"/>`;
+  s += `<path d="${arcPath(mx, my, 300, 200, 320)}" fill="none" stroke="${P.primary}" stroke-width="8" stroke-linecap="round"/>`;
+  return s;
+}
+function motifHealth(mx, my) {
+  let s = '';
+  for (const [r, op] of [[360, 0.1], [280, 0.18], [200, 0.3]]) {
+    s += `<circle cx="${mx}" cy="${my}" r="${r}" fill="none" stroke="${P.secondary}" stroke-opacity="${op}" stroke-width="2"/>`;
+  }
+  // ECG trace across the motif.
+  const pts = [[-360, 0], [-140, 0], [-100, -40], [-60, 0], [-20, 0], [10, -230], [50, 190], [90, 0], [150, 0], [190, -60], [230, 0], [360, 0]];
+  s += `<path d="M ${pts.map(([x, y]) => `${mx + x} ${my + y}`).join(' L ')}" fill="none" stroke="${P.primary}" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>`;
+  s += `<rect x="${mx - 18}" y="${my + 230}" width="36" height="110" rx="6" fill="${P.fg}" fill-opacity="0.8"/>`;
+  s += `<rect x="${mx - 55}" y="${my + 267}" width="110" height="36" rx="6" fill="${P.fg}" fill-opacity="0.8"/>`;
+  return s;
+}
+
 const MOTIFS = {
+  'lumen-commerce': motifCommerce,
+  'pulse-health': motifHealth,
   'nebula-wallet': motifWallet,
   'aurora-fit': motifFit,
   'cipher-notes': motifNotes,
@@ -486,11 +518,141 @@ function screenTasks() {
   s += bottomNav(W, H, 3);
   return s;
 }
+// Mobile view of the Lumen storefront (responsive site, not an app).
+function screenCommerce() {
+  const { W, H } = SCREEN;
+  const M = 60, cw = W - 2 * M;
+  let s = `<rect width="${W}" height="${H}" fill="${P.bg}"/>`;
+  s += statusBar(W);
+  // browser url bar
+  s += card(M, 110, cw, 84, { op: 0.06, rx: 42 });
+  s += txt(W / 2, 165, 'lumen.shop', { size: 32, fill: P.muted, anchor: 'middle', font: FONT_MONO });
+  s += txt(M, 290, 'LUMEN', { size: 56, weight: 700, font: FONT_DISPLAY, ls: 6 });
+  s += `<rect x="${W - M - 60}" y="250" width="60" height="6" rx="3" fill="${P.fg}"/><rect x="${W - M - 60}" y="270" width="60" height="6" rx="3" fill="${P.fg}"/><rect x="${W - M - 40}" y="290" width="40" height="6" rx="3" fill="${P.fg}"/>`;
+  // hero banner
+  s += `<rect x="${M}" y="350" width="${cw}" height="560" rx="32" fill="${P.secondary}" fill-opacity="0.35"/>`;
+  s += txt(M + 50, 470, 'NEW DROP', { size: 30, fill: P.primary, ls: 6, font: FONT_MONO });
+  s += txt(M + 50, 570, 'Light that', { size: 84, weight: 700 });
+  s += txt(M + 50, 670, 'follows you', { size: 84, weight: 700 });
+  s += `<rect x="${M + 50}" y="760" width="300" height="90" rx="45" fill="${P.primary}"/>`;
+  s += txt(M + 200, 818, 'Shop now', { size: 34, weight: 700, fill: P.bg, anchor: 'middle' });
+  // product grid 2x3
+  const gw = (cw - 30) / 2;
+  for (let i = 0; i < 6; i++) {
+    const x = M + (i % 2) * (gw + 30), y = 970 + Math.floor(i / 2) * 420;
+    s += card(x, y, gw, 300, { op: 0.06 });
+    s += `<circle cx="${x + gw / 2}" cy="${y + 150}" r="70" fill="none" stroke="${i === 1 ? P.primary : P.muted}" stroke-opacity="0.6" stroke-width="4"/>`;
+    s += txt(x, y + 350, `Lamp 0${i + 1}`, { size: 32, weight: 700 });
+    s += txt(x, y + 392, `$${89 + i * 20}`, { size: 30, fill: P.muted, font: FONT_MONO });
+  }
+  return s;
+}
+// Pulse mobile app (fullstack: native app + web dashboard).
+function screenHealth() {
+  const { W, H } = SCREEN;
+  const M = 60, cw = W - 2 * M;
+  let s = `<rect width="${W}" height="${H}" fill="${P.bg}"/>`;
+  s += statusBar(W);
+  s += appHeader(W, 'Today', 'PULSE CARE');
+  s += `<rect x="${M}" y="330" width="${cw}" height="520" rx="32" fill="${P.secondary}" fill-opacity="0.22" stroke="${P.secondary}" stroke-opacity="0.4" stroke-width="2"/>`;
+  s += txt(M + 44, 410, 'Heart rate', { size: 30, fill: P.muted });
+  s += txt(M + 44, 520, '72', { size: 120, weight: 700 });
+  s += txt(M + 230, 520, 'bpm', { size: 40, fill: P.muted });
+  let d = `M ${M + 44} 700`;
+  for (let i = 0; i <= 40; i++) d += ` L ${M + 44 + i * 22} ${700 + (i % 8 === 4 ? -110 : i % 8 === 5 ? 70 : Math.sin(i) * 8)}`;
+  s += `<path d="${d}" fill="none" stroke="${P.primary}" stroke-width="5" stroke-linejoin="round"/>`;
+  const rows = [['Sleep', '7h 40m'], ['Steps', '8,214'], ['Next visit', 'Thu 10:30'], ['Medication', '2 of 3']];
+  let y = 900;
+  for (const [k, v] of rows) {
+    s += card(M, y, cw, 150, { op: 0.04 });
+    s += txt(M + 40, y + 90, k, { size: 36, weight: 700 });
+    s += txt(W - M - 40, y + 90, v, { size: 36, fill: P.primary, anchor: 'end', font: FONT_MONO });
+    y += 180;
+  }
+  s += bottomNav(W, H, 0);
+  return s;
+}
+
 const SCREENS = {
+  'lumen-commerce': screenCommerce,
+  'pulse-health': screenHealth,
   'nebula-wallet': screenWallet,
   'aurora-fit': screenFit,
   'cipher-notes': screenNotes,
   'orbit-tasks': screenTasks,
+};
+
+// ---------------------------------------------------------------------------
+// Desktop screens (16:10) — web/fullstack projects only
+// ---------------------------------------------------------------------------
+function browserChrome(W, url) {
+  let s = `<rect width="${W}" height="64" fill="${P.fg}" fill-opacity="0.05"/>`;
+  [0, 1, 2].forEach((i) => { s += `<circle cx="${36 + i * 30}" cy="32" r="9" fill="${i === 0 ? P.primary : P.muted}" fill-opacity="${i === 0 ? 0.9 : 0.4}"/>`; });
+  s += card(W / 2 - 300, 14, 600, 36, { op: 0.07, rx: 18 });
+  s += txt(W / 2, 39, url, { size: 18, fill: P.muted, anchor: 'middle', font: FONT_MONO });
+  return s;
+}
+function desktopCommerce() {
+  const { W, H } = DESKTOP;
+  let s = `<rect width="${W}" height="${H}" fill="${P.bg}"/>${grid(W, H, 80)}`;
+  s += browserChrome(W, 'lumen.shop');
+  s += txt(80, 140, 'LUMEN', { size: 34, weight: 700, font: FONT_DISPLAY, ls: 6 });
+  ['Shop', 'Collections', 'Journal', 'About'].forEach((t, i) => { s += txt(700 + i * 150, 138, t, { size: 20, fill: i === 0 ? P.primary : P.muted }); });
+  s += `<rect x="1380" y="108" width="140" height="44" rx="22" fill="${P.primary}"/>`;
+  s += txt(1450, 137, 'Cart (2)', { size: 18, weight: 700, fill: P.bg, anchor: 'middle' });
+  s += txt(80, 290, 'NEW DROP — AUTUMN', { size: 20, fill: P.primary, ls: 6, font: FONT_MONO });
+  s += txt(80, 390, 'Light that', { size: 88, weight: 700 });
+  s += txt(80, 490, 'follows you.', { size: 88, weight: 700 });
+  s += txt(80, 550, 'Modular lamps, shipped flat, assembled in minutes.', { size: 24, fill: P.muted });
+  s += `<rect x="80" y="600" width="220" height="64" rx="32" fill="${P.primary}"/>`;
+  s += txt(190, 641, 'Shop now', { size: 22, weight: 700, fill: P.bg, anchor: 'middle' });
+  s += `<rect x="860" y="220" width="660" height="460" rx="28" fill="${P.secondary}" fill-opacity="0.3"/>`;
+  s += motifCommerce(1190, 470).replace(/r="360"/, 'r="200"');
+  for (let i = 0; i < 4; i++) {
+    const x = 80 + i * 370;
+    s += card(x, 740, 340, 200, { op: 0.06 });
+    s += `<circle cx="${x + 80}" cy="840" r="44" fill="none" stroke="${i === 1 ? P.primary : P.muted}" stroke-opacity="0.6" stroke-width="3"/>`;
+    s += txt(x + 150, 830, `Lamp 0${i + 1}`, { size: 22, weight: 700 });
+    s += txt(x + 150, 864, `$${89 + i * 20}`, { size: 20, fill: P.muted, font: FONT_MONO });
+  }
+  return s;
+}
+function desktopHealth() {
+  const { W, H } = DESKTOP;
+  let s = `<rect width="${W}" height="${H}" fill="${P.bg}"/>`;
+  s += browserChrome(W, 'app.pulse.care/patients');
+  s += `<rect x="0" y="64" width="260" height="${H - 64}" fill="${P.fg}" fill-opacity="0.03"/>`;
+  s += txt(40, 130, 'PULSE', { size: 28, weight: 700, font: FONT_DISPLAY, ls: 6, fill: P.primary });
+  ['Overview', 'Patients', 'Schedule', 'Reports', 'Settings'].forEach((t, i) => {
+    if (i === 1) s += `<rect x="24" y="${178 + i * 56}" width="212" height="44" rx="10" fill="${P.primary}" fill-opacity="0.15"/>`;
+    s += txt(48, 207 + i * 56, t, { size: 20, fill: i === 1 ? P.primary : P.muted });
+  });
+  s += txt(310, 140, 'Patients', { size: 40, weight: 700 });
+  s += txt(310, 178, '128 active · 6 need attention', { size: 20, fill: P.muted });
+  const stats = [['Avg heart rate', '74 bpm'], ['Adherence', '92%'], ['Visits today', '18']];
+  stats.forEach(([k, v], i) => {
+    const x = 310 + i * 420;
+    s += card(x, 220, 390, 150, { op: 0.05 });
+    s += txt(x + 30, 270, k, { size: 20, fill: P.muted });
+    s += txt(x + 30, 335, v, { size: 46, weight: 700, fill: i === 0 ? P.primary : P.fg });
+  });
+  s += card(310, 400, 810, 540, { op: 0.04 });
+  s += txt(340, 450, 'Heart rate — 7 days', { size: 22, weight: 700 });
+  let d = 'M 340 760';
+  for (let i = 0; i <= 37; i++) d += ` L ${340 + i * 20} ${760 - Math.sin(i / 3) * 90 - (i % 9 === 4 ? 120 : 0)}`;
+  s += `<path d="${d}" fill="none" stroke="${P.primary}" stroke-width="4" stroke-linejoin="round"/>`;
+  s += card(1150, 400, 370, 540, { op: 0.04 });
+  s += txt(1180, 450, 'Needs attention', { size: 22, weight: 700 });
+  ['A. Ribeiro', 'M. Costa', 'J. Lima', 'P. Alves', 'R. Souza', 'L. Prado'].forEach((nm, i) => {
+    s += `<circle cx="1200" cy="${510 + i * 70}" r="20" fill="${P.secondary}" fill-opacity="0.4"/>`;
+    s += txt(1235, 518 + i * 70, nm, { size: 20 });
+    s += `<circle cx="1480" cy="${510 + i * 70}" r="7" fill="${i < 2 ? P.primary : P.muted}"/>`;
+  });
+  return s;
+}
+const DESKTOPS = {
+  'lumen-commerce': desktopCommerce,
+  'pulse-health': desktopHealth,
 };
 
 // ---------------------------------------------------------------------------
@@ -499,12 +661,13 @@ const SCREENS = {
 function svgDoc(W, H, inner) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${inner}</svg>\n`;
 }
-// Square render wrapper: side = target height, content translated into the
-// central safe column so a center-crop reproduces the target exactly.
+// Square render wrapper: side = the target's longer edge, content centered so
+// a center-crop reproduces the target exactly (portrait or landscape).
 function svgSquareWrapper(W, H, inner) {
-  const side = H;
+  const side = Math.max(W, H);
   const offsetX = (side - W) / 2;
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${side}" height="${side}" viewBox="0 0 ${side} ${side}"><rect width="${side}" height="${side}" fill="${P.bg}"/><g transform="translate(${offsetX} 0)">${inner}</g></svg>\n`;
+  const offsetY = (side - H) / 2;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${side}" height="${side}" viewBox="0 0 ${side} ${side}"><rect width="${side}" height="${side}" fill="${P.bg}"/><g transform="translate(${offsetX} ${offsetY})">${inner}</g></svg>\n`;
 }
 
 // ---------------------------------------------------------------------------
@@ -524,7 +687,7 @@ function pngDims(file) {
  * Returns { ok, w, h } or { ok:false, reason }.
  */
 function renderPng(inner, W, H, outPng, tmp) {
-  const side = H;
+  const side = Math.max(W, H);
   const wrapSvg = join(tmp, 'wrap.svg');
   writeFileSync(wrapSvg, svgSquareWrapper(W, H, inner));
   const qlDir = join(tmp, 'ql');
@@ -558,13 +721,21 @@ function main() {
   const manifest = [];
   const report = [];
 
-  for (const pr of PROJECTS) {
+  const only = process.argv.slice(2);
+  const unknown = only.filter((slug) => !PROJECTS.some((p) => p.slug === slug));
+  if (unknown.length) throw new Error(`Unknown slug(s): ${unknown.join(', ')}`);
+  const selected = only.length ? PROJECTS.filter((p) => only.includes(p.slug)) : PROJECTS;
+
+  for (const pr of selected) {
     const dir = join(OUT_ROOT, pr.slug);
     mkdirSync(dir, { recursive: true });
 
     const assets = [
       { name: 'cover', inner: coverInner(pr), W: COVER.W, H: COVER.H },
       { name: 'screen', inner: SCREENS[pr.slug](), W: SCREEN.W, H: SCREEN.H },
+      ...(DESKTOPS[pr.slug]
+        ? [{ name: 'desktop', inner: DESKTOPS[pr.slug](), W: DESKTOP.W, H: DESKTOP.H }]
+        : []),
     ];
 
     for (const a of assets) {
@@ -591,12 +762,13 @@ function main() {
     }
   }
 
-  writeFileSync(join(OUT_ROOT, 'MANIFEST.txt'), manifest.join('\n') + '\n');
+  // A partial run would truncate the manifest — only the full run rewrites it.
+  if (!only.length) writeFileSync(join(OUT_ROOT, 'MANIFEST.txt'), manifest.join('\n') + '\n');
   rmSync(tmp, { recursive: true, force: true });
 
   console.log('Seed assets generated:');
   console.log(report.join('\n'));
-  console.log(`\nMANIFEST.txt written with ${manifest.length} entries.`);
+  if (!only.length) console.log(`\nMANIFEST.txt written with ${manifest.length} entries.`);
 }
 
 main();

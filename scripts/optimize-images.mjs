@@ -50,6 +50,11 @@ const RULES = [
     quality: 80,
   },
   {
+    match: (rel) => rel.endsWith("/desktop.png"),
+    maxWidth: 1600, // textura WebGL da tela do MacBook (16:10) — web/fullstack
+    quality: 80,
+  },
+  {
     // Imagens dos posts (public/blog/<slug>/*.png): a coluna de leitura tem
     // no máximo 48rem (768px) → 2x.
     match: (rel) => rel.startsWith("blog/"),
