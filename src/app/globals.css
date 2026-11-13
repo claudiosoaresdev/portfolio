@@ -275,3 +275,19 @@ body {
 .post-body img {
   border: 1px solid #2a2a2a;
 }
+
+/*
+ * Capa dos cards da home: escala de cinza + apagada em repouso, ganha cor no
+ * hover ou no foco por teclado. Só onde existe hover de verdade — em touch não
+ * há como "revelar", então a capa fica sempre colorida. A transição vem das
+ * classes motion-safe do próprio <Image> (instantâneo com reduced motion).
+ */
+@media (hover: hover) {
+  .card-cover {
+    filter: grayscale(1) brightness(0.6);
+  }
+  .group:hover .card-cover,
+  .group:focus-visible .card-cover {
+    filter: grayscale(0) brightness(1);
+  }
+}
