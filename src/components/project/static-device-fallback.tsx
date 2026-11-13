@@ -10,9 +10,12 @@ import { PAIR_POSE, PHONE_POSE, openingPoseTransform } from "./device-pose";
 const PHONE_HEIGHT_UNITS = 4.6;
 const PAIR_HEIGHT_UNITS = (7.3 * 11) / 16;
 // The 3D pair isn't flat (tipped laptop, phone 1.6 units in front), so turning
-// it reads a little larger and further left than the flat box. Measured nudge
-// at 375–2560px so the opening frames line up.
-const PAIR_OPENING_NUDGE = "translate(-5.5%, 3%) scale(1.04)";
+// it reads a little larger and further left than the flat box, and sits lower
+// the closer the camera gets (wider canvases). The vertical part grows with the
+// canvas shape, so it's a linear fit in cqw/cqh rather than a % of the box.
+// Measured at 375–2560px so the opening frames line up.
+const PAIR_OPENING_NUDGE =
+  "translate(-5.5%, calc(3% + 3.83cqw - 4.58cqh)) scale(1.04)";
 
 /** CSS phone: screen aspect mirrors the 1080x2340 texture. */
 function PhoneFrame({
