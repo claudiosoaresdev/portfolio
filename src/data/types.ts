@@ -1,4 +1,14 @@
-export type DeviceKind = "android" | "ios";
+/** Tipo do projeto: decide a cena 3D da página e o rótulo de plataforma. */
+export type ProjectType = "android" | "ios" | "web" | "fullstack";
+
+/**
+ * Categorias extras, além do tipo: hoje só `backend` (projeto com API/servidor
+ * próprio). Fullstack já conta como backend sem precisar da tag.
+ */
+export type ProjectTag = "backend";
+
+/** Estilo do celular 3D (punch-hole vs dynamic island). */
+export type PhoneKind = "android" | "ios";
 
 export interface ProjectFeature {
   title: string;
@@ -8,6 +18,17 @@ export interface ProjectFeature {
 export interface ProjectArchitecture {
   summary: string;
   stack: string[];
+}
+
+/**
+ * O que a cena 3D (e o fallback estático) precisa saber, derivado do projeto
+ * por `deviceSpec()` em src/data/platform.ts.
+ */
+export interface DeviceSpec {
+  kind: ProjectType;
+  phone: PhoneKind;
+  screenshot: string;
+  desktopScreenshot?: string;
 }
 
 export interface ProjectLinks {
@@ -23,7 +44,7 @@ export interface ProjectExtra {
 }
 
 /**
- * Os caminhos de asset (`cover`, `screenshot`) são relativos à raiz do site,
+ * Os caminhos de asset (`cover`, `screenshot`, `desktopScreenshot`) são relativos à raiz do site,
  * SEM o basePath. Quem entrega a URL ao browser — `<Image src>` e a textura do
  * WebGL — aplica `assetPath()`; o JSON-LD aplica `absoluteUrl()`. Guardar o
  * caminho cru aqui evita prefixar duas vezes.
@@ -34,8 +55,11 @@ export interface Project {
   tagline: string; // short hero line
   description: string; // 2-3 sentence paragraph
   cover: string; // "/projects/<slug>/cover.webp"  (9:16 portrait)
-  screenshot: string; // "/projects/<slug>/screen.webp" (phone screen)
-  device: DeviceKind; // which 3D phone model renders on its page
+  screenshot: string; // "/projects/<slug>/screen.webp" (phone screen, 9:16 — all types)
+  desktopScreenshot?: string; // "/projects/<slug>/desktop.webp" (16:10) — required for web/fullstack
+  device: ProjectType; // which 3D scene renders on its page
+  phone?: PhoneKind; // fullstack only: phone style; default "ios"
+  tags?: ProjectTag[]; // extra categories for the home filter (e.g. "backend")
   year: string;
   role: string;
   features: ProjectFeature[]; // >= 1

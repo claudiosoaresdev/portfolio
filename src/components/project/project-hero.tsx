@@ -6,6 +6,7 @@ import { ViewTransition } from "react";
 import { motion } from "motion/react";
 import type { Project } from "@/data/types";
 import { assetPath } from "@/lib/site";
+import { platformLabel } from "@/data/platform";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -103,7 +104,7 @@ export default function ProjectHero({ project }: { project: Project }) {
             /
           </span>
           <span className="border border-primary/40 px-2 py-1 text-primary">
-            {project.device === "ios" ? "iOS" : "Android"}
+            {platformLabel(project.device)}
           </span>
         </motion.div>
 

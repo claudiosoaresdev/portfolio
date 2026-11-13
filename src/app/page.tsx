@@ -1,5 +1,5 @@
 import Hero from "@/components/home/hero";
-import ProjectCarousel from "@/components/home/project-carousel";
+import ProjectShowcase from "@/components/home/project-showcase";
 import { getProjects } from "@/data/projects";
 
 export default function Home() {
@@ -7,7 +7,7 @@ export default function Home() {
     <main id="conteudo">
       <Hero />
       <section aria-labelledby="projects-heading" className="pb-28 pt-8">
-        <div className="mx-auto max-w-6xl px-6 pb-10">
+        <div className="mx-auto max-w-6xl px-6 pb-8">
           <p className="font-body text-xs uppercase tracking-[0.3em] text-primary">
             01 / Selected work
           </p>
@@ -21,7 +21,7 @@ export default function Home() {
             Drag to explore. Click a project to dive into its build.
           </p>
         </div>
-        <ProjectCarousel projects={getProjects()} />
+        <ProjectShowcase projects={getProjects()} />
       </section>
     </main>
   );

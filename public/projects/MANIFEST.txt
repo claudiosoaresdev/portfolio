@@ -6,3 +6,9 @@
 /projects/cipher-notes/screen.webp
 /projects/orbit-tasks/cover.webp
 /projects/orbit-tasks/screen.webp
+/projects/lumen-commerce/cover.webp
+/projects/lumen-commerce/screen.webp
+/projects/lumen-commerce/desktop.webp
+/projects/pulse-health/cover.webp
+/projects/pulse-health/screen.webp
+/projects/pulse-health/desktop.webp

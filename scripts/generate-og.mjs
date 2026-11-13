@@ -31,6 +31,14 @@ const ROOT = process.cwd();
 const OUT_DIR = path.join(ROOT, "public", "og");
 const CHECK_ONLY = process.argv.includes("--check");
 
+// Espelho de platformLabel() em src/data/platform.ts (script em JS puro).
+const PLATFORM_LABELS = {
+  android: "Android",
+  ios: "iOS",
+  web: "Web",
+  fullstack: "Fullstack",
+};
+
 const readJson = async (...segments) =>
   JSON.parse(await readFile(path.join(ROOT, ...segments), "utf8"));
 
@@ -77,7 +85,7 @@ const images = [
   ...projects.map((project) => ({
     file: `${project.slug}.png`,
     frame: {
-      eyebrow: `${project.device === "ios" ? "iOS" : "Android"} / ${project.year}`,
+      eyebrow: `${PLATFORM_LABELS[project.device] ?? project.device} / ${project.year}`,
       title: project.name,
       subtitle: project.tagline,
       footer: project.architecture.stack.slice(0, 3).join("  ·  "),
