@@ -1,7 +1,18 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import type { DeviceSpec, PhoneKind } from "@/data/types";
 import { hasDesktop } from "@/data/platform";
 import { assetPath } from "@/lib/site";
+import { PAIR_POSE, PHONE_POSE, openingPoseTransform } from "./device-pose";
+
+// Scene-unit heights of the flat stand-ins, for the opening-pose lift: the
+// phone body is 4.6 tall; the 16:11 pair box spans 7.3 units → 7.3·11/16.
+const PHONE_HEIGHT_UNITS = 4.6;
+const PAIR_HEIGHT_UNITS = (7.3 * 11) / 16;
+// The 3D pair isn't flat (tipped laptop, phone 1.6 units in front), so turning
+// it reads a little larger and further left than the flat box. Measured nudge
+// at 375–2560px so the opening frames line up.
+const PAIR_OPENING_NUDGE = "translate(-5.5%, 3%) scale(1.04)";
 
 /** CSS phone: screen aspect mirrors the 1080x2340 texture. */
 function PhoneFrame({
@@ -10,6 +21,7 @@ function PhoneFrame({
   alt,
   sizes,
   className,
+  style,
   compact = false,
 }: {
   phone: PhoneKind;
@@ -17,6 +29,7 @@ function PhoneFrame({
   alt: string;
   sizes: string;
   className: string;
+  style?: CSSProperties;
   compact?: boolean;
 }) {
   return (
@@ -24,6 +37,7 @@ function PhoneFrame({
       className={`aspect-[1080/2340] overflow-hidden border border-foreground/15 bg-background shadow-[0_0_60px_-18px_var(--color-primary)] ${
         compact ? "rounded-[1.1rem]" : "rounded-[2.5rem]"
       } ${className}`}
+      style={style}
     >
       {/* Screen */}
       <div
@@ -79,6 +93,10 @@ function PhoneFrame({
  * The phone mirrors device-scene's PHONE_FRAME 3.4×5.6 and 34rem cap: body
  * height 4.6 → min(4.6/5.6 = 82.14cqh, 34rem, 4.6/3.4 = 135.3% of the framing
  * width — 100cqw, or the 55cqw column from lg in `layer` mode → 74.4cqw).
+ *
+ * In `layer` mode the mock also takes the scene's opening pose (progress 0:
+ * lifted, turned and tilted, in the camera's perspective), so the crossfade to
+ * the live scene doesn't jump. The reduced-motion frame stays flat.
  */
 export default function StaticDeviceFallback({
   spec,
@@ -102,6 +120,11 @@ export default function StaticDeviceFallback({
               ? "lg:h-[min(82.14cqh,34rem,74.4cqw)] lg:translate-x-[22.5cqw]"
               : ""
           }`}
+          style={
+            layer
+              ? { transform: openingPoseTransform(PHONE_POSE, PHONE_HEIGHT_UNITS) }
+              : undefined
+          }
         />
       </div>
     );
@@ -115,6 +138,16 @@ export default function StaticDeviceFallback({
             ? "lg:w-[min(53.35cqw,calc(89cqh*16/11))] lg:translate-x-[18cqw]"
             : ""
         }`}
+        style={
+          layer
+            ? {
+                transform: `${PAIR_OPENING_NUDGE} ${openingPoseTransform(
+                  PAIR_POSE,
+                  PAIR_HEIGHT_UNITS,
+                )}`,
+              }
+            : undefined
+        }
       >
         {/* MacBook — lid (16:10 screen in a bezel) + thin base */}
         <div className="absolute left-0 top-0 w-[82%]">

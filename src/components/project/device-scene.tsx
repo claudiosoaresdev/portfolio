@@ -12,18 +12,8 @@ import StaticDeviceFallback from "./static-device-fallback";
 import LaptopModel from "./laptop-model";
 import PhoneModel from "./phone-model";
 import StudioLighting from "./studio-lighting";
+import { FOV, PAIR_POSE, PHONE_POSE } from "./device-pose";
 
-// Scroll-driven pose extremes, interpolated by `progress` in [0, 1].
-const ROT_Y = [-0.55, 0.55] as const;
-const ROT_X = [0.08, -0.08] as const;
-const ROT_Z = [0.05, -0.05] as const;
-const POS_Y = [0.35, -0.35] as const;
-
-// MacBook + phone pair: wider object, so a calmer swing keeps it in frame.
-const PAIR_ROT_Y = [-0.32, 0.32] as const;
-const PAIR_ROT_X = [0.05, -0.05] as const;
-const PAIR_ROT_Z = [0.02, -0.02] as const;
-const PAIR_POS_Y = [0.2, -0.2] as const;
 // Pair bounding box (scene units, incl. swing margin) used to frame the camera:
 // the camera backs off until this box fits the framing column. The pair's real
 // swing envelope is ≈ 8.1×5.5 units, centred on the origin.
@@ -40,14 +30,13 @@ const PAIR_CENTER_X_LG = 0.68;
 // The phone-only scene keeps its old spot: the centre of the right 55% column.
 const PHONE_CENTER_X_LG = 0.725;
 // Phone-only framing, same idea as the pair: the 2.2×4.6 body plus its swing
-// (POS_Y ±0.35, ROT_Y ±0.55) fits a 3.4×5.6 box, and the phone never grows
+// (PHONE_POSE: posY ±0.35, rotY ±0.55) fits a 3.4×5.6 box, and the phone never grows
 // past 34rem tall — the static fallback's cap. Keep in sync with
 // static-device-fallback.tsx (phone height = min(4.6/5.6 cqh, 34rem, …)).
 const PHONE_FRAME = { w: 3.4, h: 5.6 };
 const PHONE_BODY_H = 4.6;
 const PHONE_MAX_PX = 34 * 16;
 const PHONE_CAMERA_Z = 6.2;
-const FOV = 35;
 
 /** Calls `onReady` once every texture in the scene has loaded. */
 function useAllReady(count: number, onReady?: () => void) {
@@ -116,13 +105,11 @@ function DeviceRig({
     }
 
     const p = progress.get();
-    const [ry, rx, rz, py] = pair
-      ? [PAIR_ROT_Y, PAIR_ROT_X, PAIR_ROT_Z, PAIR_POS_Y]
-      : [ROT_Y, ROT_X, ROT_Z, POS_Y];
-    g.rotation.y = THREE.MathUtils.lerp(ry[0], ry[1], p);
-    g.rotation.x = THREE.MathUtils.lerp(rx[0], rx[1], p);
-    g.rotation.z = THREE.MathUtils.lerp(rz[0], rz[1], p);
-    g.position.y = THREE.MathUtils.lerp(py[0], py[1], p);
+    const pose = pair ? PAIR_POSE : PHONE_POSE;
+    g.rotation.y = THREE.MathUtils.lerp(pose.rotY[0], pose.rotY[1], p);
+    g.rotation.x = THREE.MathUtils.lerp(pose.rotX[0], pose.rotX[1], p);
+    g.rotation.z = THREE.MathUtils.lerp(pose.rotZ[0], pose.rotZ[1], p);
+    g.position.y = THREE.MathUtils.lerp(pose.posY[0], pose.posY[1], p);
   });
 
   if (!pair) {
