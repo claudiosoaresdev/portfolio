@@ -10,6 +10,13 @@ import { PROJECT_TAGS, PROJECT_TYPES, hasDesktop } from "./platform";
 // where fetching the app's own /public URL is not available.
 const JSON_PATH = path.join(process.cwd(), "public", "projects", "projects.json");
 
+// Projetos com `"placeholder": true` são demos: aparecem em `next dev` e somem
+// do build de produção (home, rotas, sitemap). SHOW_PLACEHOLDER_PROJECTS=true
+// força mostrá-los também no build, por exemplo num preview.
+const SHOW_PLACEHOLDERS =
+  process.env.NODE_ENV !== "production" ||
+  process.env.SHOW_PLACEHOLDER_PROJECTS === "true";
+
 let cached: Project[] | null = null;
 
 export function getProjects(): Project[] {
@@ -42,7 +49,9 @@ export function getProjects(): Project[] {
       );
     }
   }
-  cached = raw.projects;
+  cached = raw.projects.filter(
+    (project) => SHOW_PLACEHOLDERS || !project.placeholder,
+  );
   return cached;
 }
 
