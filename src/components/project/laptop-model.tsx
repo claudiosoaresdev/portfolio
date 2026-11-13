@@ -19,7 +19,7 @@ import ScreenGlass from "./screen-glass";
 // Overall size is unchanged so camera framing and the static fallback stay in sync.
 const BASE = { w: 5.9, h: 0.12, d: 3.8 };
 const LID = { w: 5.6, h: 3.6, d: 0.08 };
-const SCREEN = { w: 5.3, h: 3.3 }; // 16:10 — matches the 1600x1000 texture
+const SCREEN = { w: 5.3, h: 3.3 }; // 16:10 — matches the 2560x1600 texture
 const LID_TILT = -0.17; // ~10° back from vertical (~100° from the base)
 const DECK_Y = BASE.h / 2;
 
@@ -96,14 +96,20 @@ export default function LaptopModel({
   onReady?: () => void;
 }) {
   const invalidate = useThree((state) => state.invalidate);
+  const maxAnisotropy = useThree((state) => state.gl.capabilities.getMaxAnisotropy());
   const configureTexture = useCallback(
     (tex: THREE.Texture) => {
       tex.colorSpace = THREE.SRGBColorSpace;
+      // Textura vista de viés e bem reduzida: filtro anisotrópico máximo +
+      // mipmaps trilineares mantêm o texto legível em vez de borrado.
+      tex.anisotropy = maxAnisotropy;
+      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.generateMipmaps = true;
       tex.needsUpdate = true;
       invalidate();
       onReady?.();
     },
-    [invalidate, onReady],
+    [invalidate, onReady, maxAnisotropy],
   );
   // Same basePath rule as the phone texture: useTexture bypasses the router.
   const texture = useTexture(assetPath(screenshot), configureTexture);

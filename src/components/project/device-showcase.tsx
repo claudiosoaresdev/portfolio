@@ -13,6 +13,7 @@ import {
 
 import type { Project } from "@/data/types";
 import { deviceSpec, hasDesktop, platformLabel } from "@/data/platform";
+import { useLocalized } from "./lang";
 import DeviceCanvas from "./device-canvas";
 import StaticDeviceFallback from "./static-device-fallback";
 
@@ -26,10 +27,11 @@ function MicroLabel({ children }: { children: ReactNode }) {
 
 // Phase content is factored out so the animated (cross-fading) and reduced-motion
 // (plain stacked) renders share identical markup and DOM reading order.
-function AppPhase({ project }: { project: Project }) {
+function AppPhase({ project: base }: { project: Project }) {
+  const { project, t } = useLocalized(base);
   return (
     <div className="space-y-4">
-      <MicroLabel>The app</MicroLabel>
+      <MicroLabel>{t.theApp}</MicroLabel>
       <p className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
         {project.tagline}
       </p>
@@ -40,10 +42,11 @@ function AppPhase({ project }: { project: Project }) {
   );
 }
 
-function PlatformPhase({ project }: { project: Project }) {
+function PlatformPhase({ project: base }: { project: Project }) {
+  const { project, t } = useLocalized(base);
   return (
     <div className="space-y-4">
-      <MicroLabel>Platform</MicroLabel>
+      <MicroLabel>{t.platform}</MicroLabel>
       <div>
         <span className="inline-flex border border-primary/40 px-3 py-1 font-body text-sm uppercase tracking-widest text-primary">
           {platformLabel(project.device)}
@@ -60,11 +63,12 @@ function PlatformPhase({ project }: { project: Project }) {
   );
 }
 
-function HighlightPhase({ project }: { project: Project }) {
+function HighlightPhase({ project: base }: { project: Project }) {
+  const { project, t } = useLocalized(base);
   const feature = project.features[0];
   return (
     <div className="space-y-4">
-      <MicroLabel>Highlight</MicroLabel>
+      <MicroLabel>{t.highlight}</MicroLabel>
       {/* Not a heading: this scroll showcase sits between the page h1 and the
           first section h2, and it re-surfaces feature[0] which already has an
           h3 in FeaturesGrid. Using <p> avoids an h1->h3 skip and a duplicate

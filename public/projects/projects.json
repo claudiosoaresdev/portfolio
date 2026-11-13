@@ -94,21 +94,21 @@
           "src": "/projects/lunnari-digital/gallery/mobile-ia.webp",
           "type": "image",
           "frame": "mobile",
-          "caption": "AI section, mobile",
+          "caption": "AI section",
           "alt": "Phone view of the AI before and after section."
         },
         {
           "src": "/projects/lunnari-digital/gallery/mobile-cases.webp",
           "type": "image",
           "frame": "mobile",
-          "caption": "Cases, mobile",
+          "caption": "Cases",
           "alt": "Phone view of the cases section."
         },
         {
           "src": "/projects/lunnari-digital/gallery/mobile-produtos.webp",
           "type": "image",
           "frame": "mobile",
-          "caption": "Products, mobile",
+          "caption": "Products",
           "alt": "Phone view of the products section."
         }
       ],
@@ -127,6 +127,11 @@
           "Vitest",
           "Playwright",
           "Vercel"
+        ],
+        "build": [
+          "The page is a single Next.js App Router route rendered per locale. Content lives in typed modules and message files, so the Portuguese, English and Spanish versions share one layout and only the copy changes.",
+          "The cinematic feel comes from scroll choreography: GSAP timelines pin the sections, drive the horizontal phases and scrub the before/after cards, while Motion handles small interface transitions. Everything respects reduced-motion.",
+          "The contact step is a guided chat rather than a form. Answers are validated with Zod on the server, rate-limited and emailed through Resend, and the whole flow is covered by Vitest unit tests and Playwright end-to-end checks with axe-core for accessibility."
         ]
       },
       "links": {
@@ -141,7 +146,101 @@
           "title": "Design system and brand",
           "body": "The brand pairs Anton headlines with Urbanist body text over a violet orbit gradient, in a light and a dark palette driven by CSS variables. The logo, the moon phases and the orbital arc repeat across the hero, the process and the footer so the page feels like one continuous story."
         }
-      ]
+      ],
+      "heroCover": "/projects/lunnari-digital/hero.webp",
+      "translations": {
+        "pt": {
+          "tagline": "Uma landing page cinematográfica para uma software house AI-first.",
+          "description": "O site oficial da Lunnari Digital, software house brasileira que une produto, design, engenharia e IA. Uma landing page guiada pelo scroll que troca promessas genéricas de agência por provas: produtos reais, um processo claro e uma conversa guiada para começar um projeto. Está em português, inglês e espanhol, nos temas claro e escuro.",
+          "role": "Produto, design e desenvolvimento",
+          "features": [
+            {
+              "title": "História cinematográfica no scroll",
+              "description": "Um vídeo de abertura, fases da lua em órbita e cenas de antes e depois contam a história enquanto você rola, com movimento que respeita a preferência por menos animação."
+            },
+            {
+              "title": "Contato guiado por IA",
+              "description": "Em vez de um formulário frio, um assistente conversacional ajuda o visitante a descrever o projeto e envia um resumo limpo direto para o time por e-mail."
+            },
+            {
+              "title": "Três idiomas, dois temas",
+              "description": "Português, inglês e espanhol com rotas por idioma, mais tema claro e escuro que segue o sistema por padrão."
+            },
+            {
+              "title": "Prova no lugar de promessa",
+              "description": "Cases reais e produtos próprios, como o LunnaPay, no lugar da lista de serviços e logos de tecnologia."
+            },
+            {
+              "title": "Feito para ser encontrado e confiável",
+              "description": "Metadados de SEO estruturados, imagens Open Graph geradas, banner de cookies com consentimento e política de privacidade fazem parte da base."
+            }
+          ],
+          "architecture": {
+            "summary": "Next.js App Router com React 19 e Tailwind CSS v4. A coreografia de scroll roda em GSAP e Motion, e o next-intl cuida dos três idiomas e dos prefixos de rota. O assistente de contato valida as respostas com Zod e entrega o resumo pelo Resend. Testes unitários em Vitest e testes ponta a ponta com acessibilidade em Playwright e axe-core, protegidos por lint, commitlint e Husky.",
+            "build": [
+              "A página é uma única rota do App Router renderizada por idioma. O conteúdo vive em módulos tipados e arquivos de mensagens, então as versões em português, inglês e espanhol compartilham um layout e só o texto muda.",
+              "O clima cinematográfico vem da coreografia de scroll: timelines do GSAP fixam as seções, conduzem as fases horizontais e controlam os cartões de antes e depois, enquanto o Motion cuida das transições pequenas da interface. Tudo respeita a preferência por menos movimento.",
+              "O contato é um chat guiado, não um formulário. As respostas são validadas com Zod no servidor, limitadas por taxa e enviadas por e-mail com o Resend, e todo o fluxo é coberto por testes unitários em Vitest e testes ponta a ponta em Playwright, com axe-core para acessibilidade."
+            ]
+          },
+          "extras": [
+            {
+              "title": "Captação de leads por conversa",
+              "body": "A etapa de contato é um chat curto e guiado que pergunta sobre o projeto, o orçamento e o prazo, deixa o visitante revisar e editar as respostas e só então as envia. As respostas ficam no navegador até o envio, o servidor valida cada campo e limita abusos, e o time recebe um resumo estruturado por e-mail."
+            },
+            {
+              "title": "Design system e marca",
+              "body": "A marca combina títulos em Anton e texto em Urbanist sobre um gradiente violeta de órbita, em uma paleta clara e outra escura guiadas por variáveis CSS. O logo, as fases da lua e o arco orbital se repetem no hero, no processo e no rodapé, para a página parecer uma história contínua."
+            }
+          ],
+          "gallery": [
+            {
+              "caption": "Hero e rolagem inicial",
+              "alt": "Captura em loop do hero da Lunnari: um astronauta na lua com o título e o botão de ação, e depois a página rolando para a próxima seção."
+            },
+            {
+              "caption": "Quem somos",
+              "alt": "Visão desktop da seção Quem somos, com as três frentes da Lunnari."
+            },
+            {
+              "caption": "IA no negócio: antes e depois",
+              "alt": "Visão desktop da seção de IA que transforma uma cena caótica de antes em uma cena automatizada de depois."
+            },
+            {
+              "caption": "Cases",
+              "alt": "Visão desktop da seção de cases, com projetos de clientes e de conceito."
+            },
+            {
+              "caption": "Produtos próprios",
+              "alt": "Visão desktop da seção de produtos, com o LunnaPay em destaque."
+            },
+            {
+              "caption": "Processo em seis etapas",
+              "alt": "Visão desktop da seção de processo: seis etapas, de Discover a Evolve, ao longo de um arco, com três compromissos abaixo."
+            },
+            {
+              "caption": "Rolagem completa, desktop",
+              "alt": "Captura em loop rolando a landing page da Lunnari no desktop."
+            },
+            {
+              "caption": "Rolagem completa, mobile",
+              "alt": "Captura em loop rolando a landing page da Lunnari no celular."
+            },
+            {
+              "caption": "Seção de IA",
+              "alt": "Visão no celular da seção de IA, de antes e depois."
+            },
+            {
+              "caption": "Cases",
+              "alt": "Visão no celular da seção de cases."
+            },
+            {
+              "caption": "Produtos",
+              "alt": "Visão no celular da seção de produtos."
+            }
+          ]
+        }
+      }
     },
     {
       "slug": "nebula-wallet",
