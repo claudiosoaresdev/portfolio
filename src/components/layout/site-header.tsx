@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { assetPath, site } from "@/lib/site";
 
 export default function SiteHeader() {
   return (
@@ -12,9 +13,20 @@ export default function SiteHeader() {
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
         <Link
           href="/"
-          className="pointer-events-auto font-display text-sm uppercase tracking-widest text-foreground"
+          className="pointer-events-auto block shrink-0"
         >
-          Claudio Soares <span className="text-primary">Dev</span>
+          {/* <img> puro: em export estático não há otimizador da Next, e o
+              WebP já sai no tamanho certo de scripts/optimize-images.mjs.
+              Proporção 1883×101 do arquivo → width/height evitam layout shift. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={assetPath("/images/logo-claudio-soares-dev.webp")}
+            alt={site.name}
+            width={1000}
+            height={54}
+            decoding="async"
+            className="h-3.5 w-auto sm:h-4"
+          />
         </Link>
         <nav
           aria-label="Principal"
